@@ -1,0 +1,49 @@
+<launch>
+  <include file="$(find my_planner)/launch/rviz.launch"></include>
+
+  <!-- size of map, change the size inflate x, y, z according to your application -->
+  <arg name="map_size_x" value="10.0"/>
+  <arg name="map_size_y" value="10.0"/>
+  <arg name="map_size_z" value=" 3.0"/>
+
+  <!-- topic of your odometry such as VIO or LIO -->
+  <arg name="odom_topic" value="/visual_slam/odom" />
+
+  <!-- use simulator -->
+  <include file="$(find my_planner)/launch/my_sim.xml">
+    <arg name="map_size_x_" value="$(arg map_size_x)"/>
+    <arg name="map_size_y_" value="$(arg map_size_y)"/>
+    <arg name="map_size_z_" value="$(arg map_size_z)"/>
+    <arg name="c_num" value="200"/>
+    <arg name="p_num" value="200"/>
+    <arg name="min_dist" value="1.2"/>
+
+    <arg name="odometry_topic" value="$(arg odom_topic)" />
+  </include>
+
+  <!-- my test node -->
+
+  <node pkg="my_planner" name="position_cmd_test" type="position_cmd_test">
+    <param name="DistanceThreshold" value="0.3" />
+    <param name="Control_Distance_Threshold" value="0.2" />
+    <param name="SPEED" value="0.8" />
+    <param name="wait_time" value="3.0" />
+    <param name="ACC_max" value="0.1" />
+    <param name="dt" value="0.05" />
+  </node>
+
+  <!-- vel=1 acc=2 jerk=3 -->  
+  <!-- <node pkg="my_planner" name="min_snap" type="minimum_snap" output="screen">
+    <param name="ctrl_level" type="int" value="1" />
+  </node> -->
+  
+  <node pkg="my_planner" name="poly_traj_generator" type="poly_traj_generator" output="screen">
+    <remap from="/position_cmd" to="/planning/pos_cmd" />
+  </node>
+
+  <node pkg="my_planner" name="my_traj_server" type="my_traj_server" output="screen">
+    <remap from="/position_cmd" to="/planning/pos_cmd" />
+  </node>
+
+
+</launch>
