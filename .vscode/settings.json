@@ -77,10 +77,12 @@
         "valarray": "cpp",
         "variant": "cpp",
         "bit": "cpp",
-        "core": "cpp"
+        "core": "cpp",
+        "eigen": "cpp"
     },
     "ros.distro": "noetic",
     "C_Cpp.errorSquiggles": "Disabled",
     "files.autoSave": "onFocusChange",
-    "editor.fontSize": 16
+    "editor.fontSize": 16,
+    "cmake.sourceDirectory": "${workspaceFolder}/src"
 }

@@ -159,6 +159,37 @@ public:
         return acc;
     }
 
+    Eigen::Vector3d evaluateJerk(double t)
+    {
+        /* detetrmine segment num */
+        int idx = 0;
+        while (times[idx] + 1e-4 < t)
+        {
+            t -= times[idx];
+            ++idx;
+        }
+
+        /* evaluation */
+        int order = cxs[idx].size();
+        Eigen::VectorXd jx(order - 3), jy(order - 3), jz(order - 3);
+
+        /* coef of vel */
+        for (int i = 0; i < order - 3; ++i)
+        {
+            jx(i) = double((i + 3) * (i + 2) * (i + 1)) * cxs[idx][order - 4 - i];
+            jy(i) = double((i + 3) * (i + 2) * (i + 1)) * cys[idx][order - 4 - i];
+            jz(i) = double((i + 3) * (i + 2) * (i + 1)) * czs[idx][order - 4 - i];
+        }
+        double ts = t;
+        Eigen::VectorXd tv(order - 3);
+        for (int i = 0; i < order - 3; ++i)
+            tv(i) = pow(ts, i);
+
+        Eigen::Vector3d jerk;
+        jerk(0) = tv.dot(jx), jerk(1) = tv.dot(jy), jerk(2) = tv.dot(jz);
+        return jerk;
+    }
+
     /* for evaluating traj, should be called in sequence!!! */
     double getTimeSum()
     {

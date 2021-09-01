@@ -10,26 +10,29 @@
 using namespace Eigen;
 using namespace std;
 
-quadrotor_msgs::PositionCommand goal;
+geometry_msgs::PoseStamped goal;
 nav_msgs::Odometry Odom;
 PolynomialTraj Poly_traj;
 quadrotor_msgs::PolynomialTrajectory poly_pub_topic;
 ros::Publisher Poly_coef_pub;
 geometry_msgs::PoseStamped rviz_goal;
 Vector3d cur_vel, cur_acc;
+int goal_id = 0;
 bool get_cmd = false;
 
-void pos_cmd_cb(const quadrotor_msgs::PositionCommand::ConstPtr &msg){
+void pos_cmd_cb(const quadrotor_msgs::PositionCommand::ConstPtr &msg)
+{
 
     get_cmd = true;
-    
+
     cur_vel(0) = msg->velocity.x;
     cur_vel(1) = msg->velocity.y;
     cur_vel(2) = msg->velocity.z;
 
-    // cur_acc(0) = msg->acceleration.x;
-    // cur_acc(1) = msg->acceleration.y;
-    // cur_acc(2) = msg->acceleration.z;
+    cur_acc(0) = msg->acceleration.x;
+    cur_acc(1) = msg->acceleration.y;
+    cur_acc(2) = msg->acceleration.z;
+    // cur_acc(2) = 0;
 }
 
 void minimum_snap(const Vector3d tag_pos)
@@ -37,13 +40,17 @@ void minimum_snap(const Vector3d tag_pos)
     Vector3d det_pos, det_vel, det_acc;
     Vector3d sta_pos, sta_vel, sta_acc;
 
-    if (get_cmd){
+    if (get_cmd)
+    {
         sta_vel = cur_vel;
-        // sta_acc = cur_acc;
-    } else {
-        sta_vel << 0, 0, 0;
+        // sta_acc << 0, 0, 0;
+        sta_acc = cur_acc;
     }
-    sta_acc << 0, 0, 0;
+    else
+    {
+        sta_vel << 0, 0, 0;
+        sta_acc << 0, 0, 0;
+    }
 
     sta_pos(0) = Odom.pose.pose.position.x;
     sta_pos(1) = Odom.pose.pose.position.y;
@@ -55,8 +62,8 @@ void minimum_snap(const Vector3d tag_pos)
 
     // get optimal T
     det_pos = tag_pos - sta_pos;
-    det_vel = - sta_vel;
-    det_acc = - sta_acc;
+    det_vel = -sta_vel;
+    det_acc = -sta_acc;
 
     /* minimum jerk */
     a = 0;
@@ -128,18 +135,20 @@ void minimum_snap(const Vector3d tag_pos)
     poly_pub_topic.header.stamp = ros::Time::now();
     poly_pub_topic.header.frame_id = "world";
 
-    MatrixXd coef(3, poly_pub_topic.num_order+1);
+    MatrixXd coef(3, poly_pub_topic.num_order + 1);
 
-    for(int i=0; i<3; i++){
-        coef(i, 0) = A(i)/120;
-        coef(i, 1) = B(i)/24;
-        coef(i, 2) = C(i)/6;
-        coef(i, 3) = acc(i);
+    for (int i = 0; i < 3; i++)
+    {
+        coef(i, 0) = A(i) / 120;
+        coef(i, 1) = B(i) / 24;
+        coef(i, 2) = C(i) / 6;
+        coef(i, 3) = acc(i) / 2;
         coef(i, 4) = vel(i);
         coef(i, 5) = pos(i);
     }
 
-    for(int j=0; j<poly_pub_topic.num_order+1; j++){
+    for (int j = 0; j < (int)poly_pub_topic.num_order + 1; j++)
+    {
         poly_pub_topic.coef_x.push_back(coef(0, j));
         poly_pub_topic.coef_y.push_back(coef(1, j));
         poly_pub_topic.coef_z.push_back(coef(2, j));
@@ -147,53 +156,21 @@ void minimum_snap(const Vector3d tag_pos)
     poly_pub_topic.time.push_back(T);
 
     Poly_coef_pub.publish(poly_pub_topic);
-
-    // jerk_input = A * t * t / 2 + B * t + C;
-    // Position.push_back(pos);
-    // Velocity.push_back(vel);
-    // Acceleration.push_back(acc);
-
-
-    // t = t + dt;
-    // while (t < T)
-    // {
-    //     jerk_input = A * t * t / 2 + B * t + C;
-
-    //     // pos(0) = pos(0) + vel(0) * dt + acc(0) * pow(dt,2) / 2;
-    //     // pos(1) = pos(1) + vel(1) * dt + acc(1) * pow(dt,2) / 2;
-    //     // pos(2) = pos(2) + vel(2) * dt + acc(2) * pow(dt,2) / 2;
-    //     // vel(0) = vel(0) + acc(0) * dt;
-    //     // vel(1) = vel(1) + acc(1) * dt;
-    //     // vel(2) = vel(2) + acc(2) * dt;
-        
-    //     for (int i = 0; i < 3; i++)
-    //     {
-    //         pos(i) = pos(i) + vel(i) * dt + acc(i) * dt * dt / 2 + jerk_input(i) * dt * dt * dt / 6;
-    //         vel(i) = vel(i) + acc(i) * dt + jerk_input(i) * dt * dt / 2;
-    //         acc(i) = acc(i) + jerk_input(i) * dt;
-    //     }
-
-    //     Position.push_back(pos);
-    //     Velocity.push_back(vel);
-    //     Acceleration.push_back(acc);
-    //     Jerk.push_back(jerk_input);
-    //     t = t + dt;
-    // }
-
 }
 
-void goal_cmd_cb(const quadrotor_msgs::PositionCommand::ConstPtr &msg)
+void goal_cmd_cb(const geometry_msgs::PoseStamped::ConstPtr &msg)
 {
     goal = *msg;
     static Vector3d tag_pos;
-    if (tag_pos(0) == goal.position.x && tag_pos(1) == goal.position.y && tag_pos(2) == goal.position.z)
+
+    if (tag_pos(0) == goal.pose.position.x && tag_pos(1) == goal.pose.position.y && tag_pos(2) == goal.pose.position.z)
     {
         return;
     }
     else
     {
-        tag_pos << goal.position.x, goal.position.y, goal.position.z;
-        
+        tag_pos << goal.pose.position.x, goal.pose.position.y, goal.pose.position.z;
+
         ROS_INFO("[poly_gen] Get goal! (%.2f, %.2f, %.2f)", tag_pos(0), tag_pos(1), tag_pos(2));
         minimum_snap(tag_pos);
     }
@@ -203,7 +180,6 @@ void rviz_goal_cb(const geometry_msgs::PoseStamped::ConstPtr &msg)
 {
     rviz_goal = *msg;
     static Vector3d tag_pos;
-
     tag_pos << rviz_goal.pose.position.x, rviz_goal.pose.position.y, rviz_goal.pose.position.z;
     ROS_INFO("[poly_gen] Get rviz goal! (%.2f, %.2f, %.2f)", tag_pos(0), tag_pos(1), tag_pos(2));
 
@@ -211,20 +187,20 @@ void rviz_goal_cb(const geometry_msgs::PoseStamped::ConstPtr &msg)
 }
 
 void Odom_cb(const nav_msgs::Odometry::ConstPtr &msg)
-{   
+{
     Odom = *msg;
 }
 
 int main(int argc, char **argv)
 {
     ros::init(argc, argv, "poly_traj_generator");
-    ros::NodeHandle nh;
+    ros::NodeHandle nh("~");
     ros::Rate rate(20.0);
 
     Poly_coef_pub = nh.advertise<quadrotor_msgs::PolynomialTrajectory>("/planning/poly_coefs", 10);
-    
+
     ros::Subscriber Odom_sub = nh.subscribe<nav_msgs::Odometry>("/visual_slam/odom", 10, Odom_cb);
-    ros::Subscriber Goal_sub = nh.subscribe<quadrotor_msgs::PositionCommand>("/planning/goal_cmd", 10, goal_cmd_cb);
+    ros::Subscriber Goal_sub = nh.subscribe<geometry_msgs::PoseStamped>("/planning/goal_cmd", 10, goal_cmd_cb);
     ros::Subscriber Goal_rviz_sub = nh.subscribe<geometry_msgs::PoseStamped>("/move_base_simple/goal", 10, rviz_goal_cb);
     ros::Subscriber Position_cmd_sub = nh.subscribe<quadrotor_msgs::PositionCommand>("/position_cmd", 10, pos_cmd_cb);
 

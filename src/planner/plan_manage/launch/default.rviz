@@ -5,19 +5,19 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Planning1
+        - /Planning1/vector_dir1
+        - /Planning1/Goal_point1
         - /Planning1/drone_path1
         - /Mapping1/simulation_map1/Autocompute Value Bounds1
         - /Simulation1/robot1
-        - /Rviz_goal1
+        - /Marker1
       Splitter Ratio: 0.5
     Tree Height: 865
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
     Expanded:
-      - /2D Pose Estimate1
       - /2D Nav Goal1
-      - /Publish Point1
     Name: Tool Properties
     Splitter Ratio: 0.5886790156364441
   - Class: rviz/Views
@@ -66,6 +66,22 @@ Visualization Manager:
       Value: true
     - Class: rviz/Group
       Displays:
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: /visualization_node/vector_dir
+          Name: vector_dir
+          Namespaces:
+            "": true
+          Queue Size: 2
+          Value: true
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: /visualization_node/goal_point
+          Name: Goal_point
+          Namespaces:
+            "": true
+          Queue Size: 1
+          Value: true
         - Alpha: 1
           Buffer Length: 1
           Class: rviz/Path
@@ -192,21 +208,13 @@ Visualization Manager:
           Value: true
       Enabled: true
       Name: Simulation
-    - Alpha: 1
-      Axes Length: 1
-      Axes Radius: 0.10000000149011612
-      Class: rviz/Pose
-      Color: 255; 25; 0
+    - Class: rviz/Marker
       Enabled: true
-      Head Length: 0.30000001192092896
-      Head Radius: 0.10000000149011612
-      Name: Rviz_goal
-      Queue Size: 10
-      Shaft Length: 1
-      Shaft Radius: 0.05000000074505806
-      Shape: Axes
-      Topic: /move_base_simple/goal
-      Unreliable: false
+      Marker Topic: /my_traj_server/optimal_list
+      Name: Marker
+      Namespaces:
+        "": true
+      Queue Size: 100
       Value: true
   Enabled: true
   Global Options:
@@ -221,21 +229,13 @@ Visualization Manager:
     - Class: rviz/Select
     - Class: rviz/FocusCamera
     - Class: rviz/Measure
-    - Class: rviz/SetInitialPose
-      Theta std deviation: 0.2617993950843811
-      Topic: /initialpose
-      X std deviation: 0.5
-      Y std deviation: 0.5
     - Class: rviz/SetGoal
       Topic: /move_base_simple/goal
-    - Class: rviz/PublishPoint
-      Single click: true
-      Topic: /clicked_point
   Value: true
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 9.052801132202148
+      Distance: 8.610718727111816
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -243,17 +243,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 0.3503631353378296
-        Y: -1.0192503929138184
+        X: 0.6478333473205566
+        Y: -0.8502142429351807
         Z: 7.152557373046875e-07
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.0047969818115234
+      Pitch: 1.0347968339920044
       Target Frame: world
-      Yaw: 4.27044677734375
+      Yaw: 4.360438823699951
     Saved:
       - Class: rviz/ThirdPersonFollower
         Distance: 17.48538589477539

@@ -32,11 +32,18 @@
     <param name="dt" value="0.05" />
   </node>
 
-  <!-- vel=1 acc=2 jerk=3 -->  
+  <node pkg="my_visualization" name="visualization_node" type="visualization_node" output="screen">
+    <remap from="/goal_point1" to="/planning/goal_cmd" />
+    <remap from="/goal_point2" to="/move_base_simple/goal" />
+    <remap from="/position_cmd" to="/planning/pos_cmd" />
+    <remap from="/odometry" to="$(arg odom_topic)" />
+  </node>
+
+  <!-- vel=1 acc=2 jerk=3 -->
   <!-- <node pkg="my_planner" name="min_snap" type="minimum_snap" output="screen">
     <param name="ctrl_level" type="int" value="1" />
   </node> -->
-  
+
   <node pkg="my_planner" name="poly_traj_generator" type="poly_traj_generator" output="screen">
     <remap from="/position_cmd" to="/planning/pos_cmd" />
   </node>
