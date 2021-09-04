@@ -18,18 +18,21 @@ namespace my_planner
         ros::NodeHandle nh;
 
         ros::Publisher goal_point_pub;
-        ros::Publisher arrow_pub;
+        ros::Publisher acc_pub;
+        ros::Publisher vel_pub;
         ros::Publisher traj_pub;
 
     public:
+        enum pub_type{VEL, ACC};
         PlanVisual(){};
         ~PlanVisual(){};
         PlanVisual(ros::NodeHandle &node);
         typedef std::shared_ptr<PlanVisual> Ptr;
         void visualInit(ros::NodeHandle &node);
+        void displayMakerList(ros::Publisher pub, const std::vector<Eigen::Vector3d> &list, Eigen::Vector4d color, const double scale, int id);
         void displayGoalPoint(Eigen::Vector3d goal_point, Eigen::Vector4d color, const double scale, int id);
-        void displayArrow(Eigen::Vector3d start, Eigen::Vector3d end, Eigen::Vector4d color, int id);
-        void displayTraj(Eigen::MatrixXd traj_pts, int id);
+        void displayArrow(PlanVisual::pub_type type_id, Eigen::Vector3d start, Eigen::Vector3d end, Eigen::Vector4d color, int id);
+        void displayTraj(std::vector<Eigen::Vector3d> &list, int id);
     };
 }
 

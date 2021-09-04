@@ -169,7 +169,7 @@ void goal_cmd_cb(const geometry_msgs::PoseStamped::ConstPtr &msg)
     }
     else
     {
-        tag_pos << goal.pose.position.x, goal.pose.position.y, goal.pose.position.z;
+        tag_pos << goal.pose.position.x, goal.pose.position.y, goal.pose.position.z >= 0 ? goal.pose.position.z : 0;
 
         ROS_INFO("[poly_gen] Get goal! (%.2f, %.2f, %.2f)", tag_pos(0), tag_pos(1), tag_pos(2));
         minimum_snap(tag_pos);
@@ -179,6 +179,7 @@ void goal_cmd_cb(const geometry_msgs::PoseStamped::ConstPtr &msg)
 void rviz_goal_cb(const geometry_msgs::PoseStamped::ConstPtr &msg)
 {
     rviz_goal = *msg;
+    rviz_goal.pose.position.z = rviz_goal.pose.position.z >= 0 ? rviz_goal.pose.position.z : 0;
     static Vector3d tag_pos;
     tag_pos << rviz_goal.pose.position.x, rviz_goal.pose.position.y, rviz_goal.pose.position.z;
     ROS_INFO("[poly_gen] Get rviz goal! (%.2f, %.2f, %.2f)", tag_pos(0), tag_pos(1), tag_pos(2));
@@ -199,9 +200,9 @@ int main(int argc, char **argv)
 
     Poly_coef_pub = nh.advertise<quadrotor_msgs::PolynomialTrajectory>("/planning/poly_coefs", 10);
 
-    ros::Subscriber Odom_sub = nh.subscribe<nav_msgs::Odometry>("/visual_slam/odom", 10, Odom_cb);
-    ros::Subscriber Goal_sub = nh.subscribe<geometry_msgs::PoseStamped>("/planning/goal_cmd", 10, goal_cmd_cb);
-    ros::Subscriber Goal_rviz_sub = nh.subscribe<geometry_msgs::PoseStamped>("/move_base_simple/goal", 10, rviz_goal_cb);
+    ros::Subscriber Odom_sub = nh.subscribe<nav_msgs::Odometry>("/odometry_topic", 10, Odom_cb);
+    ros::Subscriber Goal_sub = nh.subscribe<geometry_msgs::PoseStamped>("/goal_point1", 10, goal_cmd_cb);
+    ros::Subscriber Goal_rviz_sub = nh.subscribe<geometry_msgs::PoseStamped>("/goal_point2", 10, rviz_goal_cb);
     ros::Subscriber Position_cmd_sub = nh.subscribe<quadrotor_msgs::PositionCommand>("/position_cmd", 10, pos_cmd_cb);
 
     poly_pub_topic.trajectory_id = 0;

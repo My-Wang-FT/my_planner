@@ -2,13 +2,13 @@
 #include "quadrotor_msgs/PositionCommand.h"
 #include "quadrotor_msgs/PolynomialTrajectory.h"
 #include "traj_utils/polynomial_traj.h"
-#include <traj_utils/planning_visualization.h>
+#include <geometry_msgs/PoseArray.h>
 
 ros::Publisher pose_cmd_pub;
+ros::Publisher traj_pts_pub;
 ros::Subscriber poly_traj_sub;
 
 PolynomialTraj Poly_traj;
-my_planner::PlanningVisualization::Ptr visual;
 quadrotor_msgs::PositionCommand cmd;
 ros::Time start_time;
 double pos_gain[3] = {0, 0, 0};
@@ -128,32 +128,28 @@ void polyTrajCallback(quadrotor_msgs::PolynomialTrajectory::ConstPtr msg)
     receive_traj_ = true;
 }
 
-void visual_traj(double t_cur)
+void pub_traj(double t_cur)
 {
-
     static int old_cnt = 0;
     int cnt = (int)((traj_duration_ - t_cur) * 2) + 1;
 
     if (cnt != old_cnt)
     {
+        geometry_msgs::PoseArray traj_pts;
+        geometry_msgs::Pose traj_pt;
         Eigen::Vector3d opt_pt(Eigen::Vector3d::Zero());
-        Eigen::MatrixXd optimal_pts(3, cnt + 1);
 
-        for (int i = 0; i < cnt - 1; i++)
+        traj_pts.header.stamp = ros::Time::now();
+        for (int i = 0; i < cnt+1; i++)
         {
-            opt_pt = Poly_traj.evaluate(t_cur + i * 0.5);
-            optimal_pts(0, i) = opt_pt(0);
-            optimal_pts(1, i) = opt_pt(1);
-            optimal_pts(2, i) = opt_pt(2);
+            opt_pt = Poly_traj.evaluate( std::min(t_cur + i * 0.5, traj_duration_) );
+            traj_pt.orientation.w = 1.0;
+            traj_pt.position.x = opt_pt(0);
+            traj_pt.position.y = opt_pt(1);
+            traj_pt.position.z = opt_pt(2);
+            traj_pts.poses.push_back(traj_pt);
         }
-        opt_pt = Poly_traj.evaluate(traj_duration_);
-        optimal_pts(0, cnt - 1) = opt_pt(0);
-        optimal_pts(1, cnt - 1) = opt_pt(1);
-        optimal_pts(2, cnt - 1) = opt_pt(2);
-        optimal_pts(0, cnt) = opt_pt(0);
-        optimal_pts(1, cnt) = opt_pt(1);
-        optimal_pts(2, cnt) = opt_pt(2);
-        visual->displayOptimalList(optimal_pts, 0);
+        traj_pts_pub.publish(traj_pts);
     }
     old_cnt = cnt;
 }
@@ -181,7 +177,7 @@ void cmdCallback(const ros::TimerEvent &e)
         acc = Poly_traj.evaluateAcc(t_cur);
         jerk = Poly_traj.evaluateJerk(t_cur);
         yaw_yawdot = calculate_yaw(t_cur, pos, time_now, time_last);
-        visual_traj(t_cur + 0.5);
+        pub_traj(t_cur + 0.5);
     }
     else if (t_cur >= traj_duration_)
     {
@@ -228,9 +224,9 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "my_traj_server");
     ros::NodeHandle nh("~");
 
-    visual.reset(new my_planner::PlanningVisualization(nh));
     pose_cmd_pub = nh.advertise<quadrotor_msgs::PositionCommand>("/position_cmd", 50);
-    poly_traj_sub = nh.subscribe("/planning/poly_coefs", 10, polyTrajCallback);
+    traj_pts_pub = nh.advertise<geometry_msgs::PoseArray>("/traj_pts", 50);
+    poly_traj_sub = nh.subscribe("/poly_coefs", 10, polyTrajCallback);
 
     ros::Timer cmd_timer = nh.createTimer(ros::Duration(0.01), cmdCallback);
 

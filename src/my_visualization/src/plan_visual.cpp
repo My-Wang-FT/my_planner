@@ -7,7 +7,8 @@ namespace my_planner
         nh = node;
 
         goal_point_pub = nh.advertise<visualization_msgs::Marker>("goal_point", 2);
-        arrow_pub = nh.advertise<visualization_msgs::Marker>("vector_dir", 2);
+        acc_pub = nh.advertise<visualization_msgs::Marker>("acc_dir", 2);
+        vel_pub = nh.advertise<visualization_msgs::Marker>("vel_dir", 2);
         traj_pub = nh.advertise<visualization_msgs::Marker>("poly_traj", 2);
         ROS_INFO("[Visual]: Init");
     }
@@ -17,10 +18,45 @@ namespace my_planner
         nh = node;
 
         goal_point_pub = nh.advertise<visualization_msgs::Marker>("goal_point", 2);
-        arrow_pub = nh.advertise<visualization_msgs::Marker>("vector_dir", 2);
+        acc_pub = nh.advertise<visualization_msgs::Marker>("acc_dir", 2);
+        vel_pub = nh.advertise<visualization_msgs::Marker>("vel_dir", 2);
         traj_pub = nh.advertise<visualization_msgs::Marker>("poly_traj", 2);
 
         ROS_INFO("[Visual]: Init");
+    }
+
+    void PlanVisual::displayMakerList(ros::Publisher pub, const std::vector<Eigen::Vector3d> &list, Eigen::Vector4d color, const double scale, int id)
+    {
+        visualization_msgs::Marker sphere, line_strip;
+        sphere.header.frame_id = line_strip.header.frame_id = "world";
+        sphere.header.stamp = line_strip.header.stamp = ros::Time::now();
+        sphere.type = visualization_msgs::Marker::SPHERE_LIST;
+        line_strip.type = visualization_msgs::Marker::LINE_STRIP;
+        sphere.action = line_strip.action = visualization_msgs::Marker::ADD;
+        sphere.id = id;
+        line_strip.id = id + 1000;
+
+        sphere.pose.orientation.w = line_strip.pose.orientation.w = 1.0;
+        sphere.color.r = line_strip.color.r = color(0);
+        sphere.color.g = line_strip.color.g = color(1);
+        sphere.color.b = line_strip.color.b = color(2);
+        sphere.color.a = line_strip.color.a = color(3) > 1e-5 ? color(3) : 1.0;
+        sphere.scale.x = scale;
+        sphere.scale.y = scale;
+        sphere.scale.z = scale;
+        line_strip.scale.x = scale / 2;
+
+        geometry_msgs::Point pt;
+
+        for (int i=0; i<int(list.size()); i++){
+            pt.x = list[i](0);
+            pt.y = list[i](1);
+            pt.z = list[i](2);
+            sphere.points.push_back(pt);
+            line_strip.points.push_back(pt);
+        }
+        pub.publish(sphere);
+        pub.publish(line_strip);
     }
 
     void PlanVisual::displayGoalPoint(Eigen::Vector3d goal_point, Eigen::Vector4d color, const double scale, int id)
@@ -47,7 +83,7 @@ namespace my_planner
         goal_point_pub.publish(sphere);
     }
 
-    void PlanVisual::displayArrow(Eigen::Vector3d start, Eigen::Vector3d end, Eigen::Vector4d color, int id)
+    void PlanVisual::displayArrow(PlanVisual::pub_type type_id, Eigen::Vector3d start, Eigen::Vector3d end, Eigen::Vector4d color, int id)
     {
         visualization_msgs::Marker sphere;
         sphere.header.frame_id = "world";
@@ -74,11 +110,24 @@ namespace my_planner
         point.y = end(1);
         point.z = end(2);
         sphere.points.push_back(point);
-        arrow_pub.publish(sphere);
+        switch (type_id)
+        {
+        case VEL:
+            vel_pub.publish(sphere);
+            break;
+        case ACC:
+            acc_pub.publish(sphere);
+            break;
+        }
     }
 
-    void PlanVisual::displayTraj(Eigen::MatrixXd traj_pts, int id)
-    {
-        ROS_INFO("Not finished");
+    void PlanVisual::displayTraj(std::vector<Eigen::Vector3d> &list, int id)
+    {   
+        if (traj_pub.getNumSubscribers() == 0)
+        {
+            return;
+        }
+
+        displayMakerList(traj_pub, list, Eigen::Vector4d(1, 0, 0, 1), 0.15, id);
     }
 }
