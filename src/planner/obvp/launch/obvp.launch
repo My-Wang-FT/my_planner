@@ -1,5 +1,5 @@
 <launch>
-  <include file="$(find traj_server)/launch/rviz.launch" />
+  <include file="$(find obvp)/launch/rviz.launch" />
 
   <!-- size of map, change the size inflate x, y, z according to your application -->
   <arg name="map_size_x" value="10.0"/>
@@ -32,7 +32,7 @@
     <param name="dt" value="0.05" />
   </node> -->
 
-  <node pkg="my_visualization" name="visualization_node" type="visualization_node" output="screen">
+  <node pkg="my_visualization" name="obvp_visual" type="obvp_visual" output="screen">
     <remap from="/goal_point1" to="/planning/goal_cmd" />
     <remap from="/goal_point2" to="/rviz/3d_nav_goal" />
     <remap from="/position_cmd" to="/planning/pos_cmd" />

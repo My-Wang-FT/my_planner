@@ -161,8 +161,11 @@ add_library( plan_visual
 )
 target_link_libraries(plan_visual ${catkin_LIBRARIES})
 
-add_executable(visualization_node src/visualization_node.cpp)
-target_link_libraries(visualization_node plan_visual)
+add_executable(obvp_visual src/obvp_visual.cpp)
+target_link_libraries(obvp_visual plan_visual)
+
+add_executable(min_snap_visual src/min_snap_visual.cpp)
+target_link_libraries(min_snap_visual plan_visual)
 
 # add_executable(position_cmd_test src/position_cmd_test.cpp)
 # target_link_libraries(position_cmd_test ${catkin_LIBRARIES})

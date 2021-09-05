@@ -33,6 +33,7 @@ namespace my_planner
         void displayGoalPoint(Eigen::Vector3d goal_point, Eigen::Vector4d color, const double scale, int id);
         void displayArrow(PlanVisual::pub_type type_id, Eigen::Vector3d start, Eigen::Vector3d end, Eigen::Vector4d color, int id);
         void displayTraj(std::vector<Eigen::Vector3d> &list, int id);
+        void deleteAllMarker();
     };
 }
 

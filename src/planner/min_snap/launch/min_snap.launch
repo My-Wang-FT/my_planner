@@ -1,5 +1,5 @@
 <launch>
-  <include file="$(find traj_server)/launch/rviz.launch" />
+  <include file="$(find min_snap)/launch/rviz.launch" />
 
   <!-- size of map, change the size inflate x, y, z according to your application -->
   <arg name="map_size_x" value="10.0"/>
@@ -26,18 +26,19 @@
     <remap from="/goal_list" to="/planning/goal_list" />
   </node>
 
-  <!-- <node pkg="my_visualization" name="visualization_node" type="visualization_node" output="screen">
-    <remap from="/goal_point1" to="/planning/goal_cmd" />
-    <remap from="/goal_point2" to="/rviz/3d_nav_goal" />
+  
+
+  <node pkg="my_visualization" name="min_snap_visual" type="min_snap_visual" output="screen">
+    <remap from="/goal_list" to="/planning/goal_list" />
     <remap from="/position_cmd" to="/planning/pos_cmd" />
     <remap from="/traj_pts" to="/planning/traj_pts" />
     <remap from="/odometry" to="$(arg odom_topic)" />
-  </node> -->
+  </node>
 
-  <!-- <node pkg="traj_server" name="my_traj_server" type="my_traj_server" output="screen">
+  <node pkg="traj_server" name="my_traj_server" type="my_traj_server" output="screen">
     <remap from="/position_cmd" to="/planning/pos_cmd" />
     <remap from="/poly_coefs" to="/planning/poly_coefs" />
     <remap from="/traj_pts" to="/planning/traj_pts" />
-  </node> -->
+  </node>
 
 </launch>

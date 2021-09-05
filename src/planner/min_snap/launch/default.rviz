@@ -5,6 +5,10 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Planning1
+        - /Planning1/vel_dir1
+        - /Planning1/acc_dir1
+        - /Planning1/Goal_point1
+        - /Planning1/plan_traj1
         - /Mapping1/simulation_map1/Autocompute Value Bounds1
         - /Simulation1/robot1
       Splitter Ratio: 0.5
@@ -64,7 +68,7 @@ Visualization Manager:
       Displays:
         - Class: rviz/Marker
           Enabled: true
-          Marker Topic: /visualization_node/vel_dir
+          Marker Topic: /min_snap_visual/vel_dir
           Name: vel_dir
           Namespaces:
             {}
@@ -72,7 +76,7 @@ Visualization Manager:
           Value: true
         - Class: rviz/Marker
           Enabled: true
-          Marker Topic: /visualization_node/acc_dir
+          Marker Topic: /min_snap_visual/acc_dir
           Name: acc_dir
           Namespaces:
             {}
@@ -80,15 +84,15 @@ Visualization Manager:
           Value: true
         - Class: rviz/Marker
           Enabled: true
-          Marker Topic: /visualization_node/goal_point
+          Marker Topic: /min_snap_visual/goal_point
           Name: Goal_point
           Namespaces:
-            {}
-          Queue Size: 1
+            "": true
+          Queue Size: 100
           Value: true
         - Class: rviz/Marker
           Enabled: true
-          Marker Topic: /visualization_node/poly_traj
+          Marker Topic: /min_snap_visual/poly_traj
           Name: plan_traj
           Namespaces:
             {}

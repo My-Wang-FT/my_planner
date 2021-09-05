@@ -10,12 +10,15 @@ using namespace my_planner;
 my_planner::PlanVisual::Ptr visual;
 nav_msgs::Odometry odom;
 
-void goal_visual_cb(const geometry_msgs::PoseStamped::ConstPtr &msg)
+void goal_visual_cb(const geometry_msgs::PoseArray::ConstPtr &msg)
 {
+    visual->deleteAllMarker();
     Eigen::Vector3d goalPoint;
-    goalPoint << msg->pose.position.x, msg->pose.position.y, msg->pose.position.z >= 0 ? msg->pose.position.z : 0;
-
-    visual->displayGoalPoint(goalPoint, Eigen::Vector4d(0, 0.5, 0.5, 1), 0.3, 0);
+    for (int i = 0; i < int(msg->poses.size()); i++)
+    {
+        goalPoint << msg->poses[i].position.x, msg->poses[i].position.y, msg->poses[i].position.z;
+        visual->displayGoalPoint(goalPoint, Eigen::Vector4d(0, 0.5, 0.5, 1), 0.3, i);
+    }
 }
 
 void pos_cmd_visual_cb(const quadrotor_msgs::PositionCommand::ConstPtr &msg)
@@ -43,7 +46,8 @@ void poly_traj_visual_cb(const geometry_msgs::PoseArray::ConstPtr &msg)
     std::vector<Eigen::Vector3d> list;
     Eigen::Vector3d pt;
 
-    for (int i=0; i<int(msg->poses.size()); i++){
+    for (int i = 0; i < int(msg->poses.size()); i++)
+    {
         pt(0) = msg->poses[i].position.x;
         pt(1) = msg->poses[i].position.y;
         pt(2) = msg->poses[i].position.z;
@@ -60,15 +64,14 @@ void odom_cb(const nav_msgs::Odometry::ConstPtr &msg)
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "visualization_node");
+    ros::init(argc, argv, "min_snap_visual");
     ros::NodeHandle nh("~");
 
     ros::Rate rate(100.0);
 
     visual.reset(new my_planner::PlanVisual(nh));
 
-    ros::Subscriber Goal_cmd_sub = nh.subscribe<geometry_msgs::PoseStamped>("/goal_point1", 10, goal_visual_cb);
-    ros::Subscriber Goal_rviz_sub = nh.subscribe<geometry_msgs::PoseStamped>("/goal_point2", 10, goal_visual_cb);
+    ros::Subscriber Goal_rviz_sub = nh.subscribe<geometry_msgs::PoseArray>("/goal_list", 10, goal_visual_cb);
     ros::Subscriber Pos_cmd_sub = nh.subscribe<quadrotor_msgs::PositionCommand>("/position_cmd", 10, pos_cmd_visual_cb);
     ros::Subscriber Odom_sub = nh.subscribe<nav_msgs::Odometry>("/odometry", 10, odom_cb);
     ros::Subscriber Poly_coef_sub = nh.subscribe<geometry_msgs::PoseArray>("/traj_pts", 10, poly_traj_visual_cb);

@@ -6,10 +6,10 @@ namespace my_planner
     {
         nh = node;
 
-        goal_point_pub = nh.advertise<visualization_msgs::Marker>("goal_point", 2);
-        acc_pub = nh.advertise<visualization_msgs::Marker>("acc_dir", 2);
-        vel_pub = nh.advertise<visualization_msgs::Marker>("vel_dir", 2);
-        traj_pub = nh.advertise<visualization_msgs::Marker>("poly_traj", 2);
+        goal_point_pub = nh.advertise<visualization_msgs::Marker>("goal_point", 10);
+        acc_pub = nh.advertise<visualization_msgs::Marker>("acc_dir", 10);
+        vel_pub = nh.advertise<visualization_msgs::Marker>("vel_dir", 10);
+        traj_pub = nh.advertise<visualization_msgs::Marker>("poly_traj", 10);
         ROS_INFO("[Visual]: Init");
     }
 
@@ -17,10 +17,10 @@ namespace my_planner
     {
         nh = node;
 
-        goal_point_pub = nh.advertise<visualization_msgs::Marker>("goal_point", 2);
-        acc_pub = nh.advertise<visualization_msgs::Marker>("acc_dir", 2);
-        vel_pub = nh.advertise<visualization_msgs::Marker>("vel_dir", 2);
-        traj_pub = nh.advertise<visualization_msgs::Marker>("poly_traj", 2);
+        goal_point_pub = nh.advertise<visualization_msgs::Marker>("goal_point", 10);
+        acc_pub = nh.advertise<visualization_msgs::Marker>("acc_dir", 10);
+        vel_pub = nh.advertise<visualization_msgs::Marker>("vel_dir", 10);
+        traj_pub = nh.advertise<visualization_msgs::Marker>("poly_traj", 10);
 
         ROS_INFO("[Visual]: Init");
     }
@@ -48,7 +48,8 @@ namespace my_planner
 
         geometry_msgs::Point pt;
 
-        for (int i=0; i<int(list.size()); i++){
+        for (int i = 0; i < int(list.size()); i++)
+        {
             pt.x = list[i](0);
             pt.y = list[i](1);
             pt.z = list[i](2);
@@ -122,12 +123,36 @@ namespace my_planner
     }
 
     void PlanVisual::displayTraj(std::vector<Eigen::Vector3d> &list, int id)
-    {   
+    {
         if (traj_pub.getNumSubscribers() == 0)
         {
             return;
         }
 
         displayMakerList(traj_pub, list, Eigen::Vector4d(1, 0, 0, 1), 0.15, id);
+    }
+
+    void PlanVisual::deleteAllMarker()
+    {
+        visualization_msgs::Marker sphere;
+        sphere.header.frame_id = "world";
+        sphere.header.stamp = ros::Time::now();
+        sphere.type = visualization_msgs::Marker::SPHERE;
+        sphere.action = visualization_msgs::Marker::DELETEALL;
+        sphere.id = 0;
+
+        sphere.pose.orientation.w = 1.0;
+        sphere.color.r = 0;
+        sphere.color.g = 0;
+        sphere.color.b = 0;
+        sphere.color.a = 1;
+        sphere.scale.x = 0;
+        sphere.scale.y = 0;
+        sphere.scale.z = 0;
+        sphere.pose.position.x = 0;
+        sphere.pose.position.y = 0;
+        sphere.pose.position.z = 0;
+        sphere.lifetime = ros::Duration();
+        goal_point_pub.publish(sphere);
     }
 }
