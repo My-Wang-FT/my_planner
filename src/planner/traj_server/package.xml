@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>my_planner</name>
+  <name>traj_server</name>
   <version>0.0.0</version>
-  <description>The my_planner package</description>
+  <description>The traj_server package</description>
 
   <!-- One maintainer tag required, multiple allowed, one person per tag -->
   <!-- Example:  -->
   <!-- <maintainer email="jane.doe@example.com">Jane Doe</maintainer> -->
-  <maintainer email="iszhouxin@todo.todo">iszhouxin</maintainer>
+  <maintainer email="mywang@todo.todo">mywang</maintainer>
 
 
   <!-- One license tag required, multiple allowed, one license per tag -->
@@ -19,7 +19,7 @@
   <!-- Url tags are optional, but multiple are allowed, one per tag -->
   <!-- Optional attribute type can be: website, bugtracker, or repository -->
   <!-- Example: -->
-  <!-- <url type="website">http://wiki.ros.org/ego_planner</url> -->
+  <!-- <url type="website">http://wiki.ros.org/traj_server</url> -->
 
 
   <!-- Author tags are optional, multiple are allowed, one per tag -->
@@ -50,23 +50,17 @@
   <!--   <doc_depend>doxygen</doc_depend> -->
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>roscpp</build_depend>
+  <build_depend>rospy</build_depend>
   <build_depend>std_msgs</build_depend>
-  <build_depend>message_runtime</build_depend>
-  
-  <build_depend>plan_env</build_depend>
-  <build_depend>traj_utils</build_depend>
-
   <build_export_depend>roscpp</build_export_depend>
+  <build_export_depend>rospy</build_export_depend>
   <build_export_depend>std_msgs</build_export_depend>
-
   <exec_depend>roscpp</exec_depend>
+  <exec_depend>rospy</exec_depend>
   <exec_depend>std_msgs</exec_depend>
-  <exec_depend>message_runtime</exec_depend>
 
-  <exec_depend>plan_env</exec_depend>
+  <build_depend>traj_utils</build_depend>
   <exec_depend>traj_utils</exec_depend>
-  
-
 
   <!-- The export tag contains other, unspecified, tags -->
   <export>

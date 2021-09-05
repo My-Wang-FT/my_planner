@@ -226,6 +226,7 @@ public:
     double getMeanVel()
     {
         double mean_vel = length / time_sum;
+        return mean_vel;
     }
 
     double getAccCost()

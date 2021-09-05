@@ -1,5 +1,5 @@
 <launch>
-  <include file="$(find my_planner)/launch/rviz.launch"></include>
+  <include file="$(find traj_server)/launch/rviz.launch" />
 
   <!-- size of map, change the size inflate x, y, z according to your application -->
   <arg name="map_size_x" value="10.0"/>
@@ -10,7 +10,7 @@
   <arg name="odom_topic" value="/visual_slam/odom" />
 
   <!-- use simulator -->
-  <include file="$(find my_planner)/launch/my_sim.xml">
+  <include file="$(find traj_server)/launch/my_sim.xml">
     <arg name="map_size_x_" value="$(arg map_size_x)"/>
     <arg name="map_size_y_" value="$(arg map_size_y)"/>
     <arg name="map_size_z_" value="$(arg map_size_z)"/>
@@ -23,7 +23,7 @@
 
   <!-- my test node -->
 
-  <!-- <node pkg="my_planner" name="position_cmd_test" type="position_cmd_test">
+  <!-- <node pkg="obvp" name="position_cmd_test" type="position_cmd_test">
     <param name="DistanceThreshold" value="0.3" />
     <param name="Control_Distance_Threshold" value="0.2" />
     <param name="SPEED" value="0.8" />
@@ -40,19 +40,14 @@
     <remap from="/odometry" to="$(arg odom_topic)" />
   </node>
 
-  <!-- vel=1 acc=2 jerk=3 -->
-  <!-- <node pkg="my_planner" name="min_snap" type="minimum_snap" output="screen">
-    <param name="ctrl_level" type="int" value="1" />
-  </node> -->
-
-  <node pkg="my_planner" name="poly_traj_generator" type="poly_traj_generator" output="screen">
+  <node pkg="obvp" name="poly_traj_generator" type="poly_traj_generator" output="screen">
     <remap from="/position_cmd" to="/planning/pos_cmd" />
     <remap from="/goal_point1" to="/planning/goal_cmd" />
     <remap from="/goal_point2" to="/rviz/3d_nav_goal" />
     <remap from="/odometry_topic" to="$(arg odom_topic)" />
   </node>
 
-  <node pkg="my_planner" name="my_traj_server" type="my_traj_server" output="screen">
+  <node pkg="traj_server" name="my_traj_server" type="my_traj_server" output="screen">
     <remap from="/position_cmd" to="/planning/pos_cmd" />
     <remap from="/poly_coefs" to="/planning/poly_coefs" />
     <remap from="/traj_pts" to="/planning/traj_pts" />
