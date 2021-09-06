@@ -36,5 +36,5 @@ include_directories(
 add_executable(position_cmd_test src/position_cmd_test.cpp)
 target_link_libraries(position_cmd_test ${catkin_LIBRARIES})
 
-add_executable(poly_traj_generator src/poly_traj_generator.cpp)
-target_link_libraries(poly_traj_generator ${catkin_LIBRARIES})
+add_executable(obvp_generator src/obvp_generator.cpp)
+target_link_libraries(obvp_generator ${catkin_LIBRARIES})

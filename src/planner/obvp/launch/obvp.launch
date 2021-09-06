@@ -40,7 +40,7 @@
     <remap from="/odometry" to="$(arg odom_topic)" />
   </node>
 
-  <node pkg="obvp" name="poly_traj_generator" type="poly_traj_generator" output="screen">
+  <node pkg="obvp" name="obvp_generator" type="obvp_generator" output="screen">
     <remap from="/position_cmd" to="/planning/pos_cmd" />
     <remap from="/goal_point1" to="/planning/goal_cmd" />
     <remap from="/goal_point2" to="/rviz/3d_nav_goal" />

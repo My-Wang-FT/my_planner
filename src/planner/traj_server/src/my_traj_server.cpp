@@ -117,14 +117,26 @@ void polyTrajCallback(quadrotor_msgs::PolynomialTrajectory::ConstPtr msg)
     ROS_INFO("[my Traj server]:receive poly_traj");
 
     Poly_traj.reset();
-    Poly_traj.addSegment(msg->coef_x, msg->coef_y, msg->coef_z, msg->time.front());
+    int idx;
+    for (int i = 0; i < msg->num_segment; i++)
+    {
+        vector<double> cx, cy, cz;
+        for (int j = 0; j < msg->num_order + 1; j++)
+        {
+            idx = i * (msg->num_order + 1) + j;
+            cx.push_back(msg->coef_x[idx]);
+            cy.push_back(msg->coef_y[idx]);
+            cz.push_back(msg->coef_z[idx]);
+        }
+        Poly_traj.addSegment(cx, cy, cz, msg->time[i]);
+    }
     Poly_traj.init();
 
-    ROS_INFO("[my traj server]:time=%f", Poly_traj.getTimes().front());
+    // ROS_INFO("[my traj server]:time=%f", Poly_traj.getTimes().front());
 
     start_time = ros::Time::now();
     traj_id_ = msg->trajectory_id;
-    traj_duration_ = msg->time.front();
+    traj_duration_ = Poly_traj.getTimeSum();
     receive_traj_ = true;
 }
 
@@ -140,9 +152,9 @@ void pub_traj(double t_cur)
         Eigen::Vector3d opt_pt(Eigen::Vector3d::Zero());
 
         traj_pts.header.stamp = ros::Time::now();
-        for (int i = 0; i < cnt+1; i++)
+        for (int i = 0; i < cnt + 1; i++)
         {
-            opt_pt = Poly_traj.evaluate( std::min(t_cur + i * 0.5, traj_duration_) );
+            opt_pt = Poly_traj.evaluate(std::min(t_cur + i * 0.5, traj_duration_));
             traj_pt.orientation.w = 1.0;
             traj_pt.position.x = opt_pt(0);
             traj_pt.position.y = opt_pt(1);

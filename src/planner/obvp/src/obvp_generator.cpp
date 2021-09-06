@@ -194,7 +194,7 @@ void Odom_cb(const nav_msgs::Odometry::ConstPtr &msg)
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "poly_traj_generator");
+    ros::init(argc, argv, "obvp_generator");
     ros::NodeHandle nh("~");
     ros::Rate rate(20.0);
 
@@ -207,7 +207,7 @@ int main(int argc, char **argv)
 
     poly_pub_topic.trajectory_id = 0;
     poly_pub_topic.num_order = 5;
-    poly_pub_topic.num_segment = 0;
+    poly_pub_topic.num_segment = 1;
     poly_pub_topic.start_yaw = 0;
     poly_pub_topic.final_yaw = 0;
     poly_pub_topic.mag_coeff = 0;

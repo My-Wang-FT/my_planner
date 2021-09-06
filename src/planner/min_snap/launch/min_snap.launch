@@ -21,12 +21,14 @@
     <arg name="odometry_topic" value="$(arg odom_topic)" />
   </include>
 
-  <node pkg="min_snap" name="get_waypoint" type="get_waypoint" output="screen">
+  <node pkg="min_snap" name="min_snap_generator" type="min_snap_generator" output="screen">
     <remap from="/rviz_goal" to="/rviz/3d_nav_goal" />
     <remap from="/goal_list" to="/planning/goal_list" />
+    <remap from="/poly_coefs" to="/planning/poly_coefs" />
+    <remap from="/odom_topic" to="$(arg odom_topic)" />
+    <remap from="/position_cmd" to="/planning/pos_cmd" />
   </node>
 
-  
 
   <node pkg="my_visualization" name="min_snap_visual" type="min_snap_visual" output="screen">
     <remap from="/goal_list" to="/planning/goal_list" />

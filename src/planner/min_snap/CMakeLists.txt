@@ -109,7 +109,7 @@ find_package(catkin REQUIRED COMPONENTS
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-#  INCLUDE_DIRS include
+ INCLUDE_DIRS include
 #  LIBRARIES min_snap
  CATKIN_DEPENDS roscpp rospy std_msgs traj_utils
 #  DEPENDS system_lib
@@ -122,7 +122,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+include
   ${catkin_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIR}
 )
@@ -198,9 +198,14 @@ include_directories(
 #   # myfile2
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
+add_library( minsnapCloseform
+  include/min_snap/min_snap_closeform.h
+  src/min_snap_closeform.cpp
+)
+target_link_libraries(minsnapCloseform ${catkin_LIBRARIES})
 
-add_executable(get_waypoint src/get_waypoint.cpp)
-target_link_libraries(get_waypoint ${catkin_LIBRARIES})
+add_executable(min_snap_generator src/min_snap_generator.cpp)
+target_link_libraries(min_snap_generator minsnapCloseform ${catkin_LIBRARIES})
 
 #############
 ## Testing ##
