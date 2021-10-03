@@ -5,6 +5,9 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Planning1
+        - /Planning1/vel_dir1
+        - /Planning1/acc_dir1
+        - /Planning1/jerk_dir1
         - /Mapping1/simulation_map1/Autocompute Value Bounds1
         - /Simulation1/robot1
       Splitter Ratio: 0.5
@@ -77,6 +80,14 @@ Visualization Manager:
           Namespaces:
             "": true
           Queue Size: 1
+          Value: true
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: /obvp_visual/jerk_dir
+          Name: jerk_dir
+          Namespaces:
+            {}
+          Queue Size: 100
           Value: true
         - Class: rviz/Marker
           Enabled: true
@@ -239,7 +250,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 8.610718727111816
+      Distance: 8.270578384399414
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1

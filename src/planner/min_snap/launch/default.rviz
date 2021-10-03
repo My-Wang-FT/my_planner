@@ -5,6 +5,7 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Planning1
+        - /Planning1/jerk_dir1
         - /Planning1/vel_dir1
         - /Planning1/acc_dir1
         - /Planning1/Goal_point1
@@ -68,10 +69,18 @@ Visualization Manager:
       Displays:
         - Class: rviz/Marker
           Enabled: true
+          Marker Topic: /min_snap_visual/jerk_dir
+          Name: jerk_dir
+          Namespaces:
+            "": true
+          Queue Size: 1
+          Value: true
+        - Class: rviz/Marker
+          Enabled: true
           Marker Topic: /min_snap_visual/vel_dir
           Name: vel_dir
           Namespaces:
-            {}
+            "": true
           Queue Size: 1
           Value: true
         - Class: rviz/Marker
@@ -79,7 +88,7 @@ Visualization Manager:
           Marker Topic: /min_snap_visual/acc_dir
           Name: acc_dir
           Namespaces:
-            {}
+            "": true
           Queue Size: 1
           Value: true
         - Class: rviz/Marker
@@ -95,7 +104,7 @@ Visualization Manager:
           Marker Topic: /min_snap_visual/poly_traj
           Name: plan_traj
           Namespaces:
-            {}
+            "": true
           Queue Size: 100
           Value: true
         - Alpha: 1
@@ -243,7 +252,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 8.610718727111816
+      Distance: 9.049065589904785
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -251,17 +260,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 1.2789275646209717
-        Y: -1.0180654525756836
+        X: 2.164052724838257
+        Y: -1.1675572395324707
         Z: 2.1457672119140625e-06
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.784797191619873
+      Pitch: 0.7747965455055237
       Target Frame: world
-      Yaw: 4.355440139770508
+      Yaw: 4.195437908172607
     Saved:
       - Class: rviz/ThirdPersonFollower
         Distance: 17.48538589477539

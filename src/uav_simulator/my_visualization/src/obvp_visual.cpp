@@ -36,6 +36,12 @@ void pos_cmd_visual_cb(const quadrotor_msgs::PositionCommand::ConstPtr &msg)
     end(2) = start(2) + msg->acceleration.z;
 
     visual->displayArrow(visual->pub_type::ACC, start, end, Eigen::Vector4d(0.2, 0, 0.8, 1), 0);
+
+    end(0) = start(0) + msg->jerk.x;
+    end(1) = start(1) + msg->jerk.y;
+    end(2) = start(2) + msg->jerk.z;
+
+    visual->displayArrow(visual->pub_type::JERK, start, end, Eigen::Vector4d(0.8, 0, 0.2, 1), 0);
 }
 
 void poly_traj_visual_cb(const geometry_msgs::PoseArray::ConstPtr &msg)

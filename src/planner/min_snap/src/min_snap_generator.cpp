@@ -40,6 +40,7 @@ void cmd_cb(const quadrotor_msgs::PositionCommand::ConstPtr &msg)
 void pub_poly_coefs()
 {
     Eigen::MatrixXd poly_coef = minsnap_solver.getPolyCoef();
+    Eigen::MatrixXd dec_vel = minsnap_solver.getDecVel();
     Eigen::VectorXd time = minsnap_solver.getTime();
 
     poly_pub_topic.num_segment = goal_list.poses.size() - 1;
@@ -49,7 +50,13 @@ void pub_poly_coefs()
     poly_pub_topic.time.clear();
     poly_pub_topic.trajectory_id = id;
 
-    cout << poly_coef << endl;
+    ROS_WARN("decision variable:");
+    for (int i = 0; i < goal_list.poses.size(); i++)
+    {
+        cout << "Point number = " << i + 1 << endl
+             << dec_vel.middleRows(i * 4, 4) << endl;
+    }
+    
     for (int i = 0; i < time.size(); i++)
     {
         for (int j = (i + 1) * 8 - 1; j >= i * 8; j--)

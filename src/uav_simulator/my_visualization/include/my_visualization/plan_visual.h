@@ -20,10 +20,11 @@ namespace my_planner
         ros::Publisher goal_point_pub;
         ros::Publisher acc_pub;
         ros::Publisher vel_pub;
+        ros::Publisher jerk_pub;
         ros::Publisher traj_pub;
 
     public:
-        enum pub_type{VEL, ACC};
+        enum pub_type{VEL, ACC, JERK};
         PlanVisual(){};
         ~PlanVisual(){};
         PlanVisual(ros::NodeHandle &node);

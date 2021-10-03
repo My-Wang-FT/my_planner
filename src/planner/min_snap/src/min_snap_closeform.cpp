@@ -9,7 +9,6 @@ namespace my_planner
         n_seg = int(wps.size()) - 1;
         n_per_seg = n_order + 1;
         sta_vaj = Eigen::MatrixXd::Zero(3, 3);
-        init_ts(1);
     }
 
     void minsnapCloseform::Init(const vector<Eigen::Vector3d> &waypoints)
@@ -19,10 +18,9 @@ namespace my_planner
         n_seg = int(wps.size()) - 1;
         n_per_seg = n_order + 1;
         sta_vaj = Eigen::MatrixXd::Zero(3, 3);
-        init_ts(1);
     }
 
-    void minsnapCloseform::set_sta_state(Eigen::MatrixXd vaj)
+    void minsnapCloseform::set_sta_state(const Eigen::MatrixXd &vaj)
     {
         sta_vaj = vaj;
     }
@@ -30,6 +28,7 @@ namespace my_planner
     void minsnapCloseform::init_ts(int init_type)
     {
         double meanval = 1.0;
+        const double dist_min = 2.0;
         ts = Eigen::VectorXd::Zero(n_seg);
         if (init_type)
         {
@@ -43,8 +42,15 @@ namespace my_planner
                     dist(i) += pow(wps[i + 1](j) - wps[i](j), 2);
                 }
                 dist(i) = sqrt(dist(i));
+                if ((dist(i)) < dist_min)
+                {
+                    dist(i) = sqrt(dist(i)) * 2;
+                }
                 dist_sum += dist(i);
             }
+            dist(0) += 1;
+            dist(n_seg - 1) += 1;
+            dist_sum += 2;
             double T = dist_sum / meanval;
             for (int i = 0; i < n_seg - 1; i++)
             {
@@ -60,7 +66,7 @@ namespace my_planner
                 ts(i) = 1;
             }
         }
-        // cout << "ts: " << ts << endl;
+        cout << "ts: " << ts.transpose() << endl;
     }
 
     int minsnapCloseform::fact(int n)
@@ -78,6 +84,21 @@ namespace my_planner
         {
             return n * fact(n - 1);
         }
+    }
+
+    Eigen::VectorXd minsnapCloseform::calDecVel(const Eigen::VectorXd decvel)
+    {
+        Eigen::VectorXd temp(Eigen::VectorXd::Zero((n_seg + 1) * 4));
+        for (int i = 0; i < (n_seg + 1) / 2; i++)
+        {
+            temp.segment(i * 8, 8) = decvel.segment((i * 2) * 8, 8);
+        }
+        if (n_seg % 2 != 1)
+        {
+            temp.tail(4) = decvel.tail(4);
+        }
+
+        return temp;
     }
 
     void minsnapCloseform::calQ()
@@ -146,14 +167,16 @@ namespace my_planner
         Ct << dF_Ct, dP_Ct;
     }
 
-    Eigen::VectorXd minsnapCloseform::MinSnapCloseFormServer(Eigen::VectorXd &wp, Eigen::Vector3d &vaj)
+    std::pair<Eigen::VectorXd, Eigen::VectorXd> minsnapCloseform::MinSnapCloseFormServer(const Eigen::VectorXd &wp, const Eigen::Vector3d &vaj)
     {
-        Eigen::VectorXd poly_coef;
+        std::pair<Eigen::VectorXd, Eigen::MatrixXd> return_vel;
+        Eigen::VectorXd poly_coef, dec_vel;
         Eigen::VectorXd dF(n_seg + 7), dP(3 * (n_seg - 1));
         Eigen::VectorXd start_cond(4), end_cond(4), d(4 * n_seg + 4);
         Eigen::MatrixXd R, R_pp, R_fp;
         start_cond << wp.head(1), vaj;
         end_cond << wp.tail(1), 0, 0, 0;
+        init_ts(1);
 
         calQ();
         calM();
@@ -167,9 +190,11 @@ namespace my_planner
         dP = -R_pp.inverse() * R_fp.transpose() * dF;
         d << dF, dP;
 
-        poly_coef = M.inverse() * Ct * d;
-
-        return poly_coef;
+        dec_vel = Ct * d;
+        poly_coef = M.inverse() * dec_vel;
+        return_vel.first = poly_coef;
+        return_vel.second = dec_vel;
+        return return_vel;
     }
 
     void minsnapCloseform::calMinsnap_polycoef()
@@ -185,10 +210,16 @@ namespace my_planner
             wps_z(i) = wps[i](2);
             vaj_z = sta_vaj.col(2);
         }
-
-        poly_coef_x = MinSnapCloseFormServer(wps_x, vaj_x);
-        poly_coef_y = MinSnapCloseFormServer(wps_y, vaj_y);
-        poly_coef_z = MinSnapCloseFormServer(wps_z, vaj_z);
+        std::pair<Eigen::VectorXd, Eigen::VectorXd> return_vel;
+        return_vel = MinSnapCloseFormServer(wps_x, vaj_x);
+        poly_coef_x = return_vel.first;
+        dec_vel_x = calDecVel(return_vel.second);
+        return_vel = MinSnapCloseFormServer(wps_y, vaj_y);
+        poly_coef_y = return_vel.first;
+        dec_vel_y = calDecVel(return_vel.second);
+        return_vel = MinSnapCloseFormServer(wps_z, vaj_z);
+        poly_coef_z = return_vel.first;
+        dec_vel_z = calDecVel(return_vel.second);
     }
 
     Eigen::MatrixXd minsnapCloseform::getPolyCoef()
@@ -196,6 +227,13 @@ namespace my_planner
         Eigen::MatrixXd poly_coef(poly_coef_x.size(), 3);
         poly_coef << poly_coef_x, poly_coef_y, poly_coef_z;
         return poly_coef;
+    }
+
+    Eigen::MatrixXd minsnapCloseform::getDecVel()
+    {
+        Eigen::MatrixXd dec_vel(dec_vel_x.size(), 3);
+        dec_vel << dec_vel_x, dec_vel_y, dec_vel_z;
+        return dec_vel;
     }
 
     Eigen::VectorXd minsnapCloseform::getTime()
