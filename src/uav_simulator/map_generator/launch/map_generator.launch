@@ -1,0 +1,37 @@
+<launch>
+  
+  <!-- <node name="rviz" pkg="rviz" type="rviz" args="-d $(find map_generator)/launch/default.rviz" required="true" /> -->
+
+  <arg name="map_size_x" default="40.0"/>
+  <arg name="map_size_y" default="40.0"/>
+  <arg name="map_size_z" default=" 5.0"/>
+
+  <arg name="start_x" default=" 0.0"/>
+  <arg name="start_y" default=" 0.0"/>
+  <arg name="start_z" default=" 0.0"/>
+
+  <node pkg ="map_generator" name ="random_complex_generator" type ="random_complex_generator" output = "screen">
+
+    <param name="init_state_x" value="$(arg start_x)"/>
+    <param name="init_state_y" value="$(arg start_y)"/>
+
+    <param name="map/x_size" value="$(arg map_size_x)" />
+    <param name="map/y_size" value="$(arg map_size_y)" />
+    <param name="map/z_size" value="$(arg map_size_z)" />
+
+    <param name="map/circle_num" value="40"/>
+    <param name="map/obs_num" value="300"/>
+    <param name="map/resolution" value="0.1"/>
+
+    <param name="ObstacleShape/lower_rad" value="0.1"/>
+    <param name="ObstacleShape/upper_rad" value="0.7"/>
+    <param name="ObstacleShape/lower_hei" value="1.0"/>
+    <param name="ObstacleShape/upper_hei" value="3.0"/>
+
+    <param name="CircleShape/lower_circle_rad" value="0.6"/>
+    <param name="CircleShape/upper_circle_rad" value="2.0"/>
+
+    <param name="sensing/rate" value="0.5"/>
+  </node>
+
+</launch>
