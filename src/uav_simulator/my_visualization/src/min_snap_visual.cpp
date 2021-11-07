@@ -24,9 +24,9 @@ void goal_visual_cb(const geometry_msgs::PoseArray::ConstPtr &msg)
 void pos_cmd_visual_cb(const quadrotor_msgs::PositionCommand::ConstPtr &msg)
 {
     Eigen::Vector3d start, end;
-    start(0) = odom.pose.pose.position.x;
-    start(1) = odom.pose.pose.position.y;
-    start(2) = odom.pose.pose.position.z;
+    start(1) = msg->position.y;
+    start(2) = msg->position.z;
+    start(0) = msg->position.x;
 
     end(0) = start(0) + msg->velocity.x;
     end(1) = start(1) + msg->velocity.y;

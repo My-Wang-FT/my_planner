@@ -59,9 +59,9 @@ void VisualMapGenerate()
 
         // for visualize only
         // Vector3d cor_round = _astar_path_finder->coordRounding(Vector3d(pt.x, pt.y, pt.z));
-        pt.x = (double(int(pt.x / _resolution)) + 0.5) * _resolution;
-        pt.y = (double(int(pt.y / _resolution)) + 0.5) * _resolution;
-        pt.z = (double(int(pt.z / _resolution)) + 0.5) * _resolution;
+        pt.x = (double(floor(pt.x / _resolution))+0.5) * _resolution;
+        pt.y = (double(floor(pt.y / _resolution))+0.5) * _resolution;
+        pt.z = (double(floor(pt.z / _resolution))+0.5) * _resolution;
         cloud_vis.points.push_back(pt);
     }
 

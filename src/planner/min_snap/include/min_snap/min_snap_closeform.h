@@ -14,6 +14,7 @@ namespace my_planner
     private:
         vector<Eigen::Vector3d> wps;
         int n_order, n_seg, n_per_seg;
+        double mean_vel;
         Eigen::VectorXd ts;
         Eigen::VectorXd poly_coef_x, poly_coef_y, poly_coef_z;
         Eigen::VectorXd dec_vel_x, dec_vel_y, dec_vel_z;
@@ -31,8 +32,8 @@ namespace my_planner
     public:
         minsnapCloseform(){};
         ~minsnapCloseform(){};
-        minsnapCloseform(const vector<Eigen::Vector3d> &waypoints);
-        void Init(const vector<Eigen::Vector3d> &waypoints);
+        minsnapCloseform(const vector<Eigen::Vector3d> &waypoints, double meanvel = 1.0);
+        void Init(const vector<Eigen::Vector3d> &waypoints, double meanvel = 1.0);
         void set_sta_state(const Eigen::MatrixXd &vaj);
         void calMinsnap_polycoef();
         Eigen::MatrixXd getPolyCoef();

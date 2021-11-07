@@ -2,22 +2,19 @@
 
 namespace my_planner
 {
-    minsnapCloseform::minsnapCloseform(const vector<Eigen::Vector3d> &waypoints)
+    minsnapCloseform::minsnapCloseform(const vector<Eigen::Vector3d> &waypoints, double meanvel)
     {
-        n_order = 7;
-        wps = waypoints;
-        n_seg = int(wps.size()) - 1;
-        n_per_seg = n_order + 1;
-        sta_vaj = Eigen::MatrixXd::Zero(3, 3);
+        this->Init(waypoints, meanvel);
     }
 
-    void minsnapCloseform::Init(const vector<Eigen::Vector3d> &waypoints)
+    void minsnapCloseform::Init(const vector<Eigen::Vector3d> &waypoints, double meanvel)
     {
         n_order = 7;
         wps = waypoints;
         n_seg = int(wps.size()) - 1;
         n_per_seg = n_order + 1;
         sta_vaj = Eigen::MatrixXd::Zero(3, 3);
+        mean_vel = meanvel;
     }
 
     void minsnapCloseform::set_sta_state(const Eigen::MatrixXd &vaj)
@@ -27,7 +24,6 @@ namespace my_planner
 
     void minsnapCloseform::init_ts(int init_type)
     {
-        double meanval = 1.0;
         const double dist_min = 2.0;
         ts = Eigen::VectorXd::Zero(n_seg);
         if (init_type)
@@ -48,10 +44,10 @@ namespace my_planner
                 }
                 dist_sum += dist(i);
             }
-            dist(0) += 1;
-            dist(n_seg - 1) += 1;
-            dist_sum += 2;
-            double T = dist_sum / meanval;
+            dist(0) += mean_vel;
+            dist(n_seg - 1) += mean_vel;
+            dist_sum += 2 * mean_vel;
+            double T = dist_sum / mean_vel;
             for (int i = 0; i < n_seg - 1; i++)
             {
                 ts(i) = dist(i) / dist_sum * T;
@@ -107,13 +103,13 @@ namespace my_planner
         for (int k = 0; k < n_seg; k++)
         {
             Eigen::MatrixXd Q_k(Eigen::MatrixXd::Zero(n_order + 1, n_order + 1));
-            for (int i = 5; i <= n_order + 1; i++)
+            for (int i = 4; i <= n_order; i++)
             {
-                for (int j = 5; j <= n_order + 1; j++)
+                for (int j = 4; j <= n_order; j++)
                 {
-                    Q_k(i - 1, j - 1) = fact(i) / fact(i - 4) *
-                                        fact(j) / fact(j - 4) /
-                                        (i + j - 7) * pow(ts(k), i + j - 7);
+                    Q_k(i, j) = fact(i) / fact(i - 4) *
+                                fact(j) / fact(j - 4) /
+                                (i + j - 7) * pow(ts(k), i + j - 7);
                 }
             }
             Q.block(k * (n_order + 1), k * (n_order + 1), n_order + 1, n_order + 1) = Q_k;

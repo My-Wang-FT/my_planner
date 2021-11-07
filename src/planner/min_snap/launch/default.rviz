@@ -27,7 +27,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: grid map
+    SyncSource: sim map
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -65,18 +65,10 @@ Visualization Manager:
       Displays:
         - Class: rviz/Marker
           Enabled: true
-          Marker Topic: /min_snap_visual/jerk_dir
-          Name: jerk_dir
-          Namespaces:
-            {}
-          Queue Size: 1
-          Value: true
-        - Class: rviz/Marker
-          Enabled: true
           Marker Topic: /min_snap_visual/vel_dir
           Name: vel_dir
           Namespaces:
-            {}
+            "": true
           Queue Size: 1
           Value: true
         - Class: rviz/Marker
@@ -84,7 +76,15 @@ Visualization Manager:
           Marker Topic: /min_snap_visual/acc_dir
           Name: acc_dir
           Namespaces:
-            {}
+            "": true
+          Queue Size: 1
+          Value: true
+        - Class: rviz/Marker
+          Enabled: true
+          Marker Topic: /min_snap_visual/jerk_dir
+          Name: jerk_dir
+          Namespaces:
+            "": true
           Queue Size: 1
           Value: true
         - Class: rviz/Marker
@@ -92,7 +92,7 @@ Visualization Manager:
           Marker Topic: /min_snap_visual/goal_point
           Name: Goal_point
           Namespaces:
-            {}
+            "": true
           Queue Size: 100
           Value: true
         - Class: rviz/Marker
@@ -100,7 +100,7 @@ Visualization Manager:
           Marker Topic: /min_snap_visual/poly_traj
           Name: plan_traj
           Namespaces:
-            {}
+            "": true
           Queue Size: 100
           Value: true
         - Alpha: 1
@@ -143,7 +143,7 @@ Visualization Manager:
           Color: 85; 170; 255
           Color Transformer: FlatColor
           Decay Time: 0
-          Enabled: true
+          Enabled: false
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -158,7 +158,7 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: true
+          Value: false
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -171,7 +171,7 @@ Visualization Manager:
           Color: 187; 187; 187
           Color Transformer: AxisColor
           Decay Time: 0
-          Enabled: false
+          Enabled: true
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -186,7 +186,7 @@ Visualization Manager:
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: false
+          Value: true
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -248,7 +248,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 36.84588623046875
+      Distance: 21.86974334716797
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -256,17 +256,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -10.13929557800293
-        Y: -5.295271873474121
-        Z: 1.4781951904296875e-05
+        X: -1.6641535758972168
+        Y: -1.8984838724136353
+        Z: 5.7220458984375e-06
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7847970724105835
+      Pitch: 0.8797962665557861
       Target Frame: world
-      Yaw: 3.510423421859741
+      Yaw: 3.4454314708709717
     Saved:
       - Class: rviz/ThirdPersonFollower
         Distance: 17.48538589477539

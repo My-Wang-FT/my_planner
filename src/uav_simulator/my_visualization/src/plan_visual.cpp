@@ -4,14 +4,7 @@ namespace my_planner
 {
     PlanVisual::PlanVisual(ros::NodeHandle &node)
     {
-        nh = node;
-
-        goal_point_pub = nh.advertise<visualization_msgs::Marker>("goal_point", 10);
-        jerk_pub = nh.advertise<visualization_msgs::Marker>("jerk_dir", 10);
-        acc_pub = nh.advertise<visualization_msgs::Marker>("acc_dir", 10);
-        vel_pub = nh.advertise<visualization_msgs::Marker>("vel_dir", 10);
-        traj_pub = nh.advertise<visualization_msgs::Marker>("poly_traj", 10);
-        ROS_INFO("[Visual]: Init");
+        PlanVisual::visualInit(node);
     }
 
     void PlanVisual::visualInit(ros::NodeHandle &node)

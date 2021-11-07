@@ -13,6 +13,7 @@ quadrotor_msgs::PositionCommand cmd;
 ros::Time start_time;
 double pos_gain[3] = {0, 0, 0};
 double vel_gain[3] = {0, 0, 0};
+double meanvel = 1.0;
 
 double last_yaw_, last_yaw_dot_;
 bool receive_traj_ = false;
@@ -143,18 +144,20 @@ void polyTrajCallback(quadrotor_msgs::PolynomialTrajectory::ConstPtr msg)
 void pub_traj(double t_cur)
 {
     static int old_cnt = 0;
-    int cnt = (int)((traj_duration_ - t_cur) * 2) + 1;
 
+    double cnt_persec = meanvel * 2;
+    int cnt = (int)((traj_duration_ - t_cur) * cnt_persec) + 2;
     if (cnt != old_cnt)
     {
+        // std::cout << "cnt = " << cnt << std::endl;
         geometry_msgs::PoseArray traj_pts;
         geometry_msgs::Pose traj_pt;
         Eigen::Vector3d opt_pt(Eigen::Vector3d::Zero());
 
         traj_pts.header.stamp = ros::Time::now();
-        for (int i = 0; i < cnt + 1; i++)
+        for (int i = 1; i <= cnt ; i++)
         {
-            opt_pt = Poly_traj.evaluate(std::min(t_cur + i * 0.5, traj_duration_));
+            opt_pt = Poly_traj.evaluate(std::min(t_cur + i / cnt_persec, traj_duration_));
             traj_pt.orientation.w = 1.0;
             traj_pt.position.x = opt_pt(0);
             traj_pt.position.y = opt_pt(1);
@@ -189,7 +192,7 @@ void cmdCallback(const ros::TimerEvent &e)
         acc = Poly_traj.evaluateAcc(t_cur);
         jerk = Poly_traj.evaluateJerk(t_cur);
         yaw_yawdot = calculate_yaw(t_cur, pos, time_now, time_last);
-        pub_traj(t_cur + 0.5);
+        pub_traj(t_cur);
     }
     else if (t_cur >= traj_duration_)
     {
@@ -254,6 +257,7 @@ int main(int argc, char **argv)
     last_yaw_dot_ = 0.0;
     time_forward_ = 1.0;
 
+    ros::param::get("/my_traj_server/mean_vel", meanvel);
     ros::Duration(1.0).sleep();
 
     ROS_INFO("[my Traj server]: ready.");

@@ -328,6 +328,7 @@ void odom_callback(const nav_msgs::Odometry::ConstPtr& msg)
   meshROS.id = 0;
   meshROS.type = visualization_msgs::Marker::MESH_RESOURCE;
   meshROS.action = visualization_msgs::Marker::ADD;
+  meshROS.mesh_use_embedded_materials = true;
   meshROS.pose.position.x = msg->pose.pose.position.x;
   meshROS.pose.position.y = msg->pose.pose.position.y;
   meshROS.pose.position.z = msg->pose.pose.position.z;
@@ -348,15 +349,19 @@ void odom_callback(const nav_msgs::Odometry::ConstPtr& msg)
   meshROS.scale.x = scale;
   meshROS.scale.y = scale;
   meshROS.scale.z = scale;
-  meshROS.color.a = color_a;
-  meshROS.color.r = color_r;
-  meshROS.color.g = color_g;
-  meshROS.color.b = color_b;
+  // meshROS.color.a = color_a;
+  // meshROS.color.r = color_r;
+  // meshROS.color.g = color_g;
+  // meshROS.color.b = color_b;
+  meshROS.color.a = 0;
+  meshROS.color.r = 0;
+  meshROS.color.g = 0;
+  meshROS.color.b = 0;
   meshROS.mesh_resource = mesh_resource;
   meshPub.publish(meshROS);                                                  
 
   // TF for raw sensor visualization
-  if (tf45)
+  if (1)
   {
     tf::Transform transform;
     transform.setOrigin(tf::Vector3(pose(0), pose(1), pose(2)));
@@ -376,10 +381,10 @@ void odom_callback(const nav_msgs::Odometry::ConstPtr& msg)
     colvec q90 = R_to_quaternion(ypr_to_R(p90));  
     transform90.setRotation(tf::Quaternion(q90(1), q90(2), q90(3), q90(0)));  
 
-    broadcaster->sendTransform(tf::StampedTransform(transform,   msg->header.stamp, string("world"),  string("base")));      
-    broadcaster->sendTransform(tf::StampedTransform(transform45, msg->header.stamp, string("base"), string("laser")));          
-    broadcaster->sendTransform(tf::StampedTransform(transform45, msg->header.stamp, string("base"), string("vision")));          
-    broadcaster->sendTransform(tf::StampedTransform(transform90, msg->header.stamp, string("base"), string("height")));          
+    broadcaster->sendTransform(tf::StampedTransform(transform,   msg->header.stamp, string("world"),  string("/base")));      
+    broadcaster->sendTransform(tf::StampedTransform(transform45, msg->header.stamp, string("/base"), string("/laser")));          
+    broadcaster->sendTransform(tf::StampedTransform(transform45, msg->header.stamp, string("/base"), string("/vision")));          
+    broadcaster->sendTransform(tf::StampedTransform(transform90, msg->header.stamp, string("/base"), string("/height")));          
   } 
 }
 
@@ -436,7 +441,9 @@ int main(int argc, char** argv)
   ros::init(argc, argv, "odom_visualization");
   ros::NodeHandle n("~");
 
-  n.param("mesh_resource", mesh_resource, std::string("package://odom_visualization/meshes/hummingbird.mesh"));
+  // n.param("mesh_resource", mesh_resource, std::string("package://odom_visualization/meshes/hummingbird.mesh"));
+  n.param("mesh_resource", mesh_resource, std::string("package://odom_visualization/meshes/f250.dae"));
+
   n.param("color/r", color_r, 1.0);
   n.param("color/g", color_g, 0.0);
   n.param("color/b", color_b, 0.0);

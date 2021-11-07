@@ -14,6 +14,7 @@ ros::Subscriber cmd_sub;
 ros::Subscriber odom_sub;
 
 int id = 0;
+double meanvel = 1.0;
 nav_msgs::Odometry odom;
 geometry_msgs::Pose goal_pt;
 geometry_msgs::PoseArray goal_list;
@@ -56,7 +57,7 @@ void pub_poly_coefs()
         cout << "Point number = " << i + 1 << endl
              << dec_vel.middleRows(i * 4, 4) << endl;
     }
-    
+
     for (int i = 0; i < time.size(); i++)
     {
         for (int j = (i + 1) * 8 - 1; j >= i * 8; j--)
@@ -83,7 +84,14 @@ void solve_min_snap()
         wp << goal_list.poses[i].position.x, goal_list.poses[i].position.y, goal_list.poses[i].position.z;
         waypoints.push_back(wp);
     }
-    minsnap_solver.Init(waypoints);
+    if (meanvel > 0)
+    {
+        minsnap_solver.Init(waypoints, meanvel);
+    }
+    else
+    {
+        minsnap_solver.Init(waypoints);
+    }
     ROS_INFO("Init success");
     minsnap_solver.set_sta_state(vaj);
     minsnap_solver.calMinsnap_polycoef();
@@ -129,6 +137,8 @@ int main(int argc, char **argv)
     rviz_goal_sub = nh.subscribe("/rviz_goal", 10, rviz_goal_cb);
     goal_list_pub = nh.advertise<geometry_msgs::PoseArray>("/goal_list", 10);
     poly_coef_pub = nh.advertise<quadrotor_msgs::PolynomialTrajectory>("/poly_coefs", 10);
+
+    ros::param::get("/min_snap_generator/mean_vel", meanvel);
 
     poly_pub_topic.num_order = 7;
     poly_pub_topic.start_yaw = 0;
