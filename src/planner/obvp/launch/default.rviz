@@ -8,7 +8,9 @@ Panels:
         - /Planning1/vel_dir1
         - /Planning1/acc_dir1
         - /Planning1/jerk_dir1
+        - /Mapping1
         - /Mapping1/simulation_map1/Autocompute Value Bounds1
+        - /Mapping1/map inflate1/Autocompute Value Bounds1
         - /Simulation1/robot1
       Splitter Ratio: 0.5
     Tree Height: 865
@@ -29,7 +31,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: ""
+    SyncSource: simulation_map
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -70,7 +72,7 @@ Visualization Manager:
           Marker Topic: /obvp_visual/vel_dir
           Name: vel_dir
           Namespaces:
-            "": true
+            {}
           Queue Size: 1
           Value: true
         - Class: rviz/Marker
@@ -78,7 +80,7 @@ Visualization Manager:
           Marker Topic: /obvp_visual/acc_dir
           Name: acc_dir
           Namespaces:
-            "": true
+            {}
           Queue Size: 1
           Value: true
         - Class: rviz/Marker
@@ -94,7 +96,7 @@ Visualization Manager:
           Marker Topic: /obvp_visual/goal_point
           Name: Goal_point
           Namespaces:
-            "": true
+            {}
           Queue Size: 1
           Value: true
         - Class: rviz/Marker
@@ -102,7 +104,7 @@ Visualization Manager:
           Marker Topic: /obvp_visual/poly_traj
           Name: plan_traj
           Namespaces:
-            "": true
+            {}
           Queue Size: 100
           Value: true
         - Alpha: 1
@@ -145,7 +147,7 @@ Visualization Manager:
           Color: 85; 170; 255
           Color Transformer: FlatColor
           Decay Time: 0
-          Enabled: true
+          Enabled: false
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -156,16 +158,16 @@ Visualization Manager:
           Size (Pixels): 3
           Size (m): 0.10000000149011612
           Style: Boxes
-          Topic: /map_generator/global_cloud
+          Topic: /map_generator/grid_map_vis
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: true
+          Value: false
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
-            Max Value: 2.3399999141693115
-            Min Value: 0.03999999910593033
+            Max Value: 4.561233997344971
+            Min Value: 0.00010095436300616711
             Value: true
           Axis: Z
           Channel Name: intensity
@@ -173,7 +175,7 @@ Visualization Manager:
           Color: 255; 255; 255
           Color Transformer: AxisColor
           Decay Time: 0
-          Enabled: true
+          Enabled: false
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
@@ -183,12 +185,12 @@ Visualization Manager:
           Selectable: true
           Size (Pixels): 3
           Size (m): 0.10000000149011612
-          Style: Flat Squares
-          Topic: /grid_map/occupancy_inflate
+          Style: Boxes
+          Topic: /map_generator/global_map
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
-          Value: true
+          Value: false
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
@@ -212,12 +214,12 @@ Visualization Manager:
           Size (Pixels): 3
           Size (m): 0.10000000149011612
           Style: Boxes
-          Topic: /grid_map/occupancy
+          Topic: /map_generator/global_map
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
           Value: false
-      Enabled: false
+      Enabled: true
       Name: Mapping
     - Class: rviz/Group
       Displays:
@@ -250,7 +252,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 8.270578384399414
+      Distance: 9.779479026794434
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -258,17 +260,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 1.2789275646209717
-        Y: -1.0180654525756836
-        Z: 2.1457672119140625e-06
+        X: 1.4682031869888306
+        Y: -1.809169054031372
+        Z: 2.6267089197062887e-06
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.784797191619873
+      Pitch: 0.7047971487045288
       Target Frame: world
-      Yaw: 4.355440139770508
+      Yaw: 4.4104390144348145
     Saved:
       - Class: rviz/ThirdPersonFollower
         Distance: 17.48538589477539

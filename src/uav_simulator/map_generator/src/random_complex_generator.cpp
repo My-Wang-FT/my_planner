@@ -244,8 +244,8 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "random_complex_generator");
     ros::NodeHandle n("~");
 
-    _all_map_pub = n.advertise<sensor_msgs::PointCloud2>("/global_map", 1);
-    _grid_map_vis_pub = n.advertise<sensor_msgs::PointCloud2>("/grid_map_vis", 1);
+    _all_map_pub = n.advertise<sensor_msgs::PointCloud2>("global_map", 1);
+    _grid_map_vis_pub = n.advertise<sensor_msgs::PointCloud2>("grid_map_vis", 1);
 
     n.param("init_state_x", _init_x, 0.0);
     n.param("init_state_y", _init_y, 0.0);

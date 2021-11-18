@@ -9,6 +9,7 @@
 
 ros::Publisher goal_list_pub;
 ros::Publisher poly_coef_pub;
+ros::Subscriber goal_list_sub;
 ros::Subscriber rviz_goal_sub;
 ros::Subscriber cmd_sub;
 ros::Subscriber odom_sub;
@@ -103,7 +104,7 @@ void rviz_goal_cb(const geometry_msgs::PoseStamped::ConstPtr &msg)
     goal_pt = msg->pose;
     if (goal_pt.position.z < 0)
     {
-        goal_pt.position.z = 0;
+        goal_pt.position.z = 1;
         goal_list.poses.push_back(goal_pt);
         goal_pt.position = odom.pose.pose.position;
         goal_list.poses.insert(goal_list.poses.begin(), goal_pt);
@@ -121,6 +122,20 @@ void rviz_goal_cb(const geometry_msgs::PoseStamped::ConstPtr &msg)
     }
 }
 
+void goal_list_cb(const geometry_msgs::PoseArray::ConstPtr &msg)
+{
+    goal_list.poses = msg->poses;
+    goal_pt.position = odom.pose.pose.position;
+    goal_list.poses.insert(goal_list.poses.begin(), goal_pt);
+    goal_list.header.stamp = ros::Time::now();
+    goal_list.header.frame_id = "world";
+    goal_list.header.seq = id++;
+    goal_list_pub.publish(goal_list);
+    solve_min_snap();
+    ROS_INFO("solver finished");
+    goal_list.poses.clear();
+}
+
 void odom_goal_cb(const nav_msgs::Odometry::ConstPtr &msg)
 {
     odom = *msg;
@@ -135,6 +150,7 @@ int main(int argc, char **argv)
     odom_sub = nh.subscribe("/odom_topic", 10, odom_goal_cb);
     cmd_sub = nh.subscribe("/position_cmd", 10, cmd_cb);
     rviz_goal_sub = nh.subscribe("/rviz_goal", 10, rviz_goal_cb);
+    goal_list_sub = nh.subscribe("/out_goal_list", 10, goal_list_cb);
     goal_list_pub = nh.advertise<geometry_msgs::PoseArray>("/goal_list", 10);
     poly_coef_pub = nh.advertise<quadrotor_msgs::PolynomialTrajectory>("/poly_coefs", 10);
 

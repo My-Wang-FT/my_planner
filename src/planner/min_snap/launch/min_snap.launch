@@ -15,13 +15,7 @@
   <!-- General topic -->
   <arg name="odom_topic" value="/visual_slam/odom" />
   <arg name="pos_cmd_topic" value="/planning/pos_cmd" />
-
-  <include file="$(find map_generator)/launch/map_generator.launch">
-    <arg name="start_x" value="$(arg init_x_)"/>
-    <arg name="start_y" value="$(arg init_y_)"/>
-    <arg name="start_z" value="$(arg init_z_)"/>
-  </include>
-
+  
   <!-- use simulator -->
   <include file="$(find traj_server)/launch/my_sim.xml">
     <arg name="map_size_x_" value="$(arg map_size_x)"/>
@@ -43,6 +37,7 @@
     <remap from="/poly_coefs" to="/planning/poly_coefs" />
     <remap from="/odom_topic" to="$(arg odom_topic)" />
     <remap from="/position_cmd" to="$(arg pos_cmd_topic)" />
+    <remap from="/out_goal_list" to="/test/goal_list" />
     <param name="mean_vel" value="$(arg meanvel)" />
   </node>
 
