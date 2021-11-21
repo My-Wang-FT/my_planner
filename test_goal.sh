@@ -6,9 +6,54 @@ rostopic pub -1 /test/goal_list geometry_msgs/PoseArray "header:
   frame_id: ''
 poses:
 - position:
-    x: 15.0
+    x: 0.0
+    y: 5.0
+    z: 5.0
+  orientation:
+    x: 0.0
     y: 0.0
-    z: 1.0
+    z: 0.0
+    w: 0.0
+- position:
+    x: 0.0
+    y: 9.0
+    z: 3.0
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 0.0
+- position:
+    x: 0.0
+    y: 11.0
+    z: 5.0
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 0.0
+- position:
+    x: 0.0
+    y: 9.0
+    z: 7.0
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 0.0
+- position:
+    x: 0.0
+    y: 7.0
+    z: 5.0
+  orientation:
+    x: 0.0
+    y: 0.0
+    z: 0.0
+    w: 0.0
+- position:
+    x: 0.0
+    y: 9.0
+    z: 3.0
   orientation:
     x: 0.0
     y: 0.0
@@ -17,34 +62,7 @@ poses:
 - position:
     x: 0.0
     y: 15.0
-    z: 1.0
-  orientation:
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 0.0
-- position:
-    x: -15.0
-    y: 0.0
-    z: 1.0
-  orientation:
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 0.0
-- position:
-    x: 0.0
-    y: -15.0
-    z: 1.0
-  orientation:
-    x: 0.0
-    y: 0.0
-    z: 0.0
-    w: 0.0
-- position:
-    x: 15.0
-    y: 0.0
-    z: 1.0
+    z: 5.0
   orientation:
     x: 0.0
     y: 0.0

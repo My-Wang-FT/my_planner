@@ -150,7 +150,7 @@ catkin_package(
 
 find_package(Eigen3 REQUIRED)
 
-include_directories(${Eigen3_INCLUDE_DIR})
+include_directories(${EIGEN3_INCLUDE_DIR})
 
 
 ## Specify additional locations of header files

@@ -28,7 +28,7 @@ Panels:
     Experimental: false
     Name: Time
     SyncMode: 0
-    SyncSource: sim map
+    SyncSource: ""
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -69,7 +69,7 @@ Visualization Manager:
           Marker Topic: /min_snap_visual/vel_dir
           Name: vel_dir
           Namespaces:
-            {}
+            "": true
           Queue Size: 1
           Value: true
         - Class: rviz/Marker
@@ -77,7 +77,7 @@ Visualization Manager:
           Marker Topic: /min_snap_visual/acc_dir
           Name: acc_dir
           Namespaces:
-            {}
+            "": true
           Queue Size: 1
           Value: true
         - Class: rviz/Marker
@@ -85,7 +85,7 @@ Visualization Manager:
           Marker Topic: /min_snap_visual/jerk_dir
           Name: jerk_dir
           Namespaces:
-            {}
+            "": true
           Queue Size: 1
           Value: true
         - Class: rviz/Marker
@@ -93,7 +93,7 @@ Visualization Manager:
           Marker Topic: /min_snap_visual/goal_point
           Name: Goal_point
           Namespaces:
-            {}
+            "": true
           Queue Size: 100
           Value: true
         - Class: rviz/Marker
@@ -101,7 +101,7 @@ Visualization Manager:
           Marker Topic: /min_snap_visual/poly_traj
           Name: plan_traj
           Namespaces:
-            {}
+            "": true
           Queue Size: 100
           Value: true
         - Alpha: 1
@@ -191,8 +191,8 @@ Visualization Manager:
         - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
-            Max Value: 2.3399999141693115
-            Min Value: 0.03999999910593033
+            Max Value: 2.9260001182556152
+            Min Value: 2.1145148277282715
             Value: true
           Axis: Z
           Channel Name: intensity
@@ -216,7 +216,7 @@ Visualization Manager:
           Use Fixed Frame: true
           Use rainbow: true
           Value: true
-      Enabled: true
+      Enabled: false
       Name: Mapping
     - Class: rviz/Group
       Displays:
@@ -249,7 +249,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/ThirdPersonFollower
-      Distance: 21.86974334716797
+      Distance: 12.926325798034668
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -257,17 +257,17 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -1.6641535758972168
-        Y: -1.8984838724136353
-        Z: 5.7220458984375e-06
+        X: 1.2434182167053223
+        Y: 7.791287422180176
+        Z: 7.985832780832425e-06
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.8797962665557861
+      Pitch: 0.2897966802120209
       Target Frame: world
-      Yaw: 3.4454314708709717
+      Yaw: 6.2454447746276855
     Saved:
       - Class: rviz/ThirdPersonFollower
         Distance: 17.48538589477539

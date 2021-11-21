@@ -204,6 +204,12 @@ add_library( minsnapCloseform
 )
 target_link_libraries(minsnapCloseform ${catkin_LIBRARIES})
 
+# add_library( minsnapOptimization
+#   include/min_snap/min_snap_optimization.h
+#   src/min_snap_optimization.cpp
+# )
+# target_link_libraries(minsnapOptimization ${catkin_LIBRARIES})
+
 add_executable(min_snap_generator src/min_snap_generator.cpp)
 target_link_libraries(min_snap_generator minsnapCloseform ${catkin_LIBRARIES})
 
