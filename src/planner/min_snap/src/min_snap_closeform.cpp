@@ -172,10 +172,7 @@ namespace my_planner
         Eigen::MatrixXd R, R_pp, R_fp;
         start_cond << wp.head(1), vaj;
         end_cond << wp.tail(1), 0, 0, 0;
-        init_ts(1);
 
-        calQ();
-        calM();
         calCt();
 
         R = Ct.transpose() * M.inverse().transpose() * Q * M.inverse() * Ct;
@@ -206,6 +203,9 @@ namespace my_planner
             wps_z(i) = wps[i](2);
             vaj_z = sta_vaj.col(2);
         }
+        init_ts(1);
+        calQ();
+        calM();
         std::pair<Eigen::VectorXd, Eigen::VectorXd> return_vel;
         return_vel = MinSnapCloseFormServer(wps_x, vaj_x);
         poly_coef_x = return_vel.first;

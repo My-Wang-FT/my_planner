@@ -10,7 +10,9 @@
   <arg name="init_y_" value="0.0"/>
   <arg name="init_z_" value="2.0"/>
 
-  <arg name="meanvel" value="4.5"/>
+  <arg name="meanvel" value="1.0"/>
+  <arg name="use_hopf" value="true"/>
+  <arg name="yaw_ctrl" value="true"/>
 
   <!-- General topic -->
   <arg name="odom_topic" value="/visual_slam/odom" />
@@ -27,7 +29,7 @@
     <arg name="c_num" value="200"/>
     <arg name="p_num" value="200"/>
     <arg name="min_dist" value="1.2"/>
-
+    <arg name="use_hopf_" value="$(arg use_hopf)"/>
     <arg name="odometry_topic" value="$(arg odom_topic)" />
   </include>
 
@@ -52,6 +54,7 @@
     <remap from="/position_cmd" to="$(arg pos_cmd_topic)" />
     <remap from="/poly_coefs" to="/planning/poly_coefs" />
     <remap from="/traj_pts" to="/planning/traj_pts" />
+    <param name="yaw_ctrl_" value="$(arg yaw_ctrl)"/>
     <param name="mean_vel" value="$(arg meanvel)" /> 
   </node>
 

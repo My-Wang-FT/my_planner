@@ -16,7 +16,7 @@ double vel_gain[3] = {0, 0, 0};
 double meanvel = 1.0;
 
 double last_yaw_, last_yaw_dot_;
-bool receive_traj_ = false;
+bool receive_traj_ = false, yaw_ctrl = true;
 int traj_id_;
 double traj_duration_, time_forward_;
 
@@ -155,7 +155,7 @@ void pub_traj(double t_cur)
         Eigen::Vector3d opt_pt(Eigen::Vector3d::Zero());
 
         traj_pts.header.stamp = ros::Time::now();
-        for (int i = 1; i <= cnt ; i++)
+        for (int i = 1; i <= cnt; i++)
         {
             opt_pt = Poly_traj.evaluate(std::min(t_cur + i / cnt_persec, traj_duration_));
             traj_pt.orientation.w = 1.0;
@@ -194,15 +194,19 @@ void cmdCallback(const ros::TimerEvent &e)
         yaw_yawdot = calculate_yaw(t_cur, pos, time_now, time_last);
         pub_traj(t_cur);
     }
-    else if (t_cur >= traj_duration_)
+    else if (t_cur >= traj_duration_ /* && t_cur < traj_duration_ + time_forward_ */ )
     {
         pos = Poly_traj.evaluate(traj_duration_);
         yaw_yawdot.first = last_yaw_;
         yaw_yawdot.second = 0;
     }
+    // else if (t_cur >= traj_duration_ + time_forward_)
+    // {
+    //     receive_traj_ = false;
+    // }
     else
     {
-        ROS_WARN("[my Traj server]: invalid time.");
+        ROS_ERROR("[my Traj server]: invalid time.");
     }
     time_last = time_now;
 
@@ -226,8 +230,11 @@ void cmdCallback(const ros::TimerEvent &e)
     cmd.jerk.y = jerk(1);
     cmd.jerk.z = jerk(2);
 
-    cmd.yaw = yaw_yawdot.first;
-    cmd.yaw_dot = yaw_yawdot.second;
+    if (yaw_ctrl)
+    {
+        cmd.yaw = yaw_yawdot.first;
+        cmd.yaw_dot = yaw_yawdot.second;
+    }
 
     last_yaw_ = cmd.yaw;
 
@@ -258,6 +265,7 @@ int main(int argc, char **argv)
     time_forward_ = 1.0;
 
     ros::param::get("/my_traj_server/mean_vel", meanvel);
+    ros::param::get("/my_traj_server/yaw_ctrl_", yaw_ctrl);
     ros::Duration(1.0).sleep();
 
     ROS_INFO("[my Traj server]: ready.");

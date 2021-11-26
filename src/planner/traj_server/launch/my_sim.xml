@@ -2,6 +2,7 @@
   <arg name="init_x" default="0.0"/>
   <arg name="init_y" default="0.0"/>
   <arg name="init_z" default="0.0"/>
+  <arg name="use_hopf_" default="true"/>
   <arg name="obj_num" value="1" />
   <arg name="map_size_x_"/>
   <arg name="map_size_y_"/>
@@ -77,7 +78,7 @@
     <param name="use_external_yaw " value="false"/>
     <param name="gains/rot/z" value="1.0"/>
     <param name="gains/ang/z" value="0.1"/>
-    <param name="use_hopf" value="true"/>
+    <param name="use_hopf" value="$(arg use_hopf_)"/>
   </node>
 
   <!-- <node pkg="so3_disturbance_generator" name="so3_disturbance_generator" type="so3_disturbance_generator" output="screen">

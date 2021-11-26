@@ -6,6 +6,7 @@
 #include <quadrotor_msgs/PolynomialTrajectory.h>
 #include <quadrotor_msgs/PositionCommand.h>
 #include "min_snap/min_snap_closeform.h"
+#include "min_snap/min_snap_optimization.h"
 
 ros::Publisher goal_list_pub;
 ros::Publisher poly_coef_pub;
@@ -19,7 +20,8 @@ double meanvel = 1.0;
 nav_msgs::Odometry odom;
 geometry_msgs::Pose goal_pt;
 geometry_msgs::PoseArray goal_list;
-my_planner::minsnapCloseform minsnap_solver;
+my_planner::minsnapOptimization minsnap_solver;
+// my_planner::minsnapCloseform minsnap_solver;
 std::vector<Eigen::Vector3d> waypoints;
 Eigen::MatrixXd vaj = Eigen::MatrixXd::Zero(3, 3);
 quadrotor_msgs::PolynomialTrajectory poly_pub_topic;
@@ -43,6 +45,7 @@ void pub_poly_coefs()
 {
     Eigen::MatrixXd poly_coef = minsnap_solver.getPolyCoef();
     Eigen::MatrixXd dec_vel = minsnap_solver.getDecVel();
+    // Eigen::MatrixXd lambda = minsnap_solver.getLambda();
     Eigen::VectorXd time = minsnap_solver.getTime();
 
     poly_pub_topic.num_segment = goal_list.poses.size() - 1;
@@ -58,6 +61,9 @@ void pub_poly_coefs()
         cout << "Point number = " << i + 1 << endl
              << dec_vel.middleRows(i * 4, 4) << endl;
     }
+
+    // ROS_WARN("lambda variable:");
+    // cout << lambda << endl;
 
     for (int i = 0; i < time.size(); i++)
     {
