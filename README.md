@@ -93,4 +93,4 @@ src
   * 增加了`my_visualization`用于可视化
   * 更改了`traj_utils`代码，修复了轨迹生成的Bug
 * 2021.08.24
-  * 新建项目，将部分ego-planner代码从项目中分离出来
+  * 新建项目，部分仿真和工具包代码来自开源项目[Ego-planner](https://github.com/ZJU-FAST-Lab/ego-planner)。
