@@ -30,9 +30,9 @@ namespace my_planner
 
         int fact(int n);
         void init_ts(int init_type);
-        void getQ(void);
-        void getM(void);
-        void getAbeq(const Eigen::VectorXd &waypoints, const Eigen::MatrixXd &cond);
+        void calQ(void);
+        void calM(void);
+        void calAbeq(const Eigen::VectorXd &waypoints, const Eigen::MatrixXd &cond);
         Eigen::VectorXd calDecVel(const Eigen::VectorXd decvel);
         std::pair<Eigen::VectorXd, Eigen::VectorXd> minsnapOptServer(const Eigen::VectorXd &wp, Eigen::Vector3d &vaj);
 

@@ -103,7 +103,7 @@ namespace my_planner
         return ts;
     }
 
-    void minsnapOptimization::getQ(void)
+    void minsnapOptimization::calQ(void)
     {
         Q = Eigen::MatrixXd::Zero(n_seg * n_per_seg, n_seg * n_per_seg);
         for (int k = 0; k < n_seg; k++)
@@ -122,7 +122,7 @@ namespace my_planner
         }
     }
 
-    void minsnapOptimization::getM()
+    void minsnapOptimization::calM()
     {
         M = Eigen::MatrixXd::Zero(n_seg * n_per_seg, n_seg * n_per_seg);
         for (int k = 0; k < n_seg; k++)
@@ -153,7 +153,7 @@ namespace my_planner
         return lambda;
     }
 
-    void minsnapOptimization::getAbeq(const Eigen::VectorXd &waypoints, const Eigen::MatrixXd &cond)
+    void minsnapOptimization::calAbeq(const Eigen::VectorXd &waypoints, const Eigen::MatrixXd &cond)
     {
         // p,v,a,j constraint in start
         Eigen::MatrixXd Aeq_start = Eigen::MatrixXd::Zero(4, n_all_poly);
@@ -344,7 +344,7 @@ namespace my_planner
                                       int ls)
     {
         cout << endl;
-        cout << "*************** Iteration = " << k << ", fx = " << fx << "****************" << endl;
+        cout << "********* Iteration = " << k << ", fx = " << fx << "**********" << endl;
         cout << "poly_coef = " << endl;
         for (int i = 0; i < n; i++)
         {
@@ -363,10 +363,29 @@ namespace my_planner
         Eigen::MatrixXd cond = Eigen::MatrixXd::Zero(2, 4);
         Eigen::MatrixXd G, H;
 
+        lambda = Eigen::VectorXd::Zero(n_lambda);
+        for (int i = 0; i < n_lambda; i++)
+        {
+            if (i < 8)
+            {
+                lambda(i) = 2.0;
+            }
+            else if (i < 8 + n_seg - 1)
+            {
+                lambda(i) = 2.0;
+            }
+            else
+            {
+                lambda(i) = 0.8;
+            }
+        }
+
         cond(0, 0) = wp(0);
         cond(1, 0) = wp(n_seg);
         cond.block(0, 1, 1, 3) = vaj.transpose();
-        getAbeq(wp, cond);
+        calAbeq(wp, cond);
+        Aeq = lambda.asDiagonal() * Aeq;
+
         G = M.inverse().transpose() * Q * M.inverse();
         H = Aeq * M.inverse();
         F = G + H.transpose() * H;
@@ -383,12 +402,6 @@ namespace my_planner
         for (int i = 0; i < 4; i++)
         {
             dec[i] = cond(0, i) / fact(i);
-        }
-
-        lambda = Eigen::VectorXd::Zero(n_lambda);
-        for (int i = 0; i < n_lambda; i++)
-        {
-            lambda(i) = 100;
         }
 
         lbfgs::lbfgs_parameter_t lbfgs_params;
@@ -429,22 +442,22 @@ namespace my_planner
             vaj_z = sta_vaj.col(2);
         }
         init_ts(1);
-        getQ();
-        getM();
+        calQ();
+        calM();
 
         std::pair<Eigen::VectorXd, Eigen::VectorXd> return_value;
         return_value = minsnapOptServer(wps_x, vaj_x);
         poly_coef_x = return_value.first;
         dec_vel_x = calDecVel(return_value.second);
         lambda_x = lambda;
-        return_value = minsnapOptServer(wps_y, vaj_y);
-        poly_coef_y = return_value.first;
-        dec_vel_y = calDecVel(return_value.second);
-        lambda_y = lambda;
         return_value = minsnapOptServer(wps_z, vaj_x);
         poly_coef_z = return_value.first;
         dec_vel_z = calDecVel(return_value.second);
         lambda_z = lambda;
+        return_value = minsnapOptServer(wps_y, vaj_y);
+        poly_coef_y = return_value.first;
+        dec_vel_y = calDecVel(return_value.second);
+        lambda_y = lambda;
     }
 
 }

@@ -1,3 +1,0 @@
-<launch>
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find obvp)/launch/default.rviz" required="true" />
-</launch>

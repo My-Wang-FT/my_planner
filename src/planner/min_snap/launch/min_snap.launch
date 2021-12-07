@@ -10,9 +10,9 @@
   <arg name="init_y_" value="0.0"/>
   <arg name="init_z_" value="2.0"/>
 
-  <arg name="meanvel" value="1.0"/>
+  <arg name="meanvel" value="4.0"/>
   <arg name="use_hopf" value="true"/>
-  <arg name="yaw_ctrl" value="true"/>
+  <arg name="yaw_ctrl" value="false"/>
 
   <!-- General topic -->
   <arg name="odom_topic" value="/visual_slam/odom" />

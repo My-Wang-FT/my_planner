@@ -99,10 +99,10 @@ namespace my_planner
 
     void minsnapCloseform::calQ()
     {
-        Q = Eigen::MatrixXd::Zero(n_seg * (n_order + 1), n_seg * (n_order + 1));
+        Q = Eigen::MatrixXd::Zero(n_seg * n_per_seg, n_seg * n_per_seg);
         for (int k = 0; k < n_seg; k++)
         {
-            Eigen::MatrixXd Q_k(Eigen::MatrixXd::Zero(n_order + 1, n_order + 1));
+            Eigen::MatrixXd Q_k(Eigen::MatrixXd::Zero(n_per_seg, n_per_seg));
             for (int i = 4; i <= n_order; i++)
             {
                 for (int j = 4; j <= n_order; j++)
@@ -112,16 +112,16 @@ namespace my_planner
                                 (i + j - 7) * pow(ts(k), i + j - 7);
                 }
             }
-            Q.block(k * (n_order + 1), k * (n_order + 1), n_order + 1, n_order + 1) = Q_k;
+            Q.block(k * n_per_seg, k * n_per_seg, n_per_seg, n_per_seg) = Q_k;
         }
     }
 
     void minsnapCloseform::calM()
     {
-        M = Eigen::MatrixXd::Zero(n_seg * (n_order + 1), n_seg * (n_order + 1));
+        M = Eigen::MatrixXd::Zero(n_seg * n_per_seg, n_seg * n_per_seg);
         for (int k = 0; k < n_seg; k++)
         {
-            Eigen::MatrixXd M_k(Eigen::MatrixXd::Zero(n_order + 1, n_order + 1));
+            Eigen::MatrixXd M_k(Eigen::MatrixXd::Zero(n_per_seg, n_per_seg));
             M_k(0, 0) = 1;
             M_k(1, 1) = 1;
             M_k(2, 2) = 2;
@@ -136,19 +136,19 @@ namespace my_planner
                     }
                 }
             }
-            M.block(k * (n_order + 1), k * (n_order + 1), n_order + 1, n_order + 1) = M_k;
+            M.block(k * n_per_seg, k * n_per_seg, n_per_seg, n_per_seg) = M_k;
         }
     }
 
     void minsnapCloseform::calCt()
     {
-        int m = n_seg * (n_order + 1);
+        int m = n_seg * n_per_seg;
         int n = 4 * (n_seg + 1);
         Ct = Eigen::MatrixXd::Zero(m, n);
         for (int i = 0; i < n_seg; i++)
         {
-            Ct.block(i * (n_order + 1), i * 4, n_order + 1, n_order + 1) =
-                Eigen::MatrixXd::Identity(n_order + 1, n_order + 1);
+            Ct.block(i * n_per_seg, i * 4, n_per_seg, n_per_seg) =
+                Eigen::MatrixXd::Identity(n_per_seg, n_per_seg);
         }
 
         Eigen::MatrixXd dF_Ct = Eigen::MatrixXd::Zero(m, 8 + (n_seg - 1));
