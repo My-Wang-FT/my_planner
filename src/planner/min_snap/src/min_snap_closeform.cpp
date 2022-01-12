@@ -15,6 +15,7 @@ namespace my_planner
         n_per_seg = n_order + 1;
         sta_vaj = Eigen::MatrixXd::Zero(3, 3);
         mean_vel = meanvel;
+        ts_init = false;
     }
 
     void minsnapCloseform::set_sta_state(const Eigen::MatrixXd &vaj)
@@ -203,7 +204,10 @@ namespace my_planner
             wps_z(i) = wps[i](2);
             vaj_z = sta_vaj.col(2);
         }
-        init_ts(1);
+        if (!ts_init)
+        {
+            init_ts(1);
+        }
         calQ();
         calM();
         std::pair<Eigen::VectorXd, Eigen::VectorXd> return_vel;

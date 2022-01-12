@@ -41,6 +41,7 @@ add_message_files(
   SwarmInfo.msg
   Px4ctrlDebug.msg
   TakeoffLand.msg
+  SimDebug.msg 
 )
 
 generate_messages(

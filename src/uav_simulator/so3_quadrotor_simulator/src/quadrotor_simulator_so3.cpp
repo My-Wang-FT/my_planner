@@ -2,6 +2,7 @@
 #include <nav_msgs/Odometry.h>
 #include <quadrotor_msgs/SO3Command.h>
 #include <quadrotor_simulator/Quadrotor.h>
+#include <quadrotor_msgs/SimDebug.h>
 #include <ros/ros.h>
 #include <sensor_msgs/Imu.h>
 #include <uav_utils/geometry_utils.h>
@@ -28,13 +29,22 @@ typedef struct _Disturbance
   Eigen::Vector3d m;
 } Disturbance;
 
+QuadrotorSimulator::Quadrotor quad;
+nav_msgs::Odometry odom_msg;
+sensor_msgs::Imu imu;
+quadrotor_msgs::SimDebug simdebug_msg;
+
 static Command     command;
 static Disturbance disturbance;
 
-void stateToOdomMsg(const QuadrotorSimulator::Quadrotor::State& state,
-                    nav_msgs::Odometry&                         odom);
+ros::Publisher odom_pub, imu_pub, simdebug_pub;
+
+void stateToOdomMsg(const QuadrotorSimulator::Quadrotor& quad,
+                    nav_msgs::Odometry&                  odom);
 void quadToImuMsg(const QuadrotorSimulator::Quadrotor& quad,
                   sensor_msgs::Imu&                    imu);
+void quadGetSimDebug(const QuadrotorSimulator::Quadrotor& quad,
+                     quadrotor_msgs::SimDebug&    simdebug_msg);
 
 static Control
 getControl(const QuadrotorSimulator::Quadrotor& quad, const Command& cmd)
@@ -196,6 +206,16 @@ moment_disturbance_callback(const geometry_msgs::Vector3::ConstPtr& m)
   disturbance.m(2) = m->z;
 }
 
+void pubcallback(const ros::TimerEvent &e)
+{
+  stateToOdomMsg(quad, odom_msg);
+  quadToImuMsg(quad, imu);
+  quadGetSimDebug(quad, simdebug_msg);
+  odom_pub.publish(odom_msg);
+  imu_pub.publish(imu);
+  simdebug_pub.publish(simdebug_msg);
+}
+
 int
 main(int argc, char** argv)
 {
@@ -203,8 +223,9 @@ main(int argc, char** argv)
 
   ros::NodeHandle n("~");
 
-  ros::Publisher  odom_pub = n.advertise<nav_msgs::Odometry>("odom", 100);
-  ros::Publisher  imu_pub  = n.advertise<sensor_msgs::Imu>("imu", 10);
+  odom_pub = n.advertise<nav_msgs::Odometry>("odom", 100);
+  imu_pub  = n.advertise<sensor_msgs::Imu>("imu", 10);
+  simdebug_pub  = n.advertise<quadrotor_msgs::SimDebug>("simdebug",10);
   ros::Subscriber cmd_sub =
     n.subscribe("cmd", 100, &cmd_callback, ros::TransportHints().tcpNoDelay());
   ros::Subscriber f_sub =
@@ -214,7 +235,6 @@ main(int argc, char** argv)
     n.subscribe("moment_disturbance", 100, &moment_disturbance_callback,
                 ros::TransportHints().tcpNoDelay());
 
-  QuadrotorSimulator::Quadrotor quad;
   double                        _init_x, _init_y, _init_z;
   n.param("simulator/init_state_x", _init_x, 0.0);
   n.param("simulator/init_state_y", _init_y, 0.0);
@@ -234,19 +254,19 @@ main(int argc, char** argv)
   std::string quad_name;
   n.param("quadrotor_name", quad_name, std::string("quadrotor"));
 
-  QuadrotorSimulator::Quadrotor::State state = quad.getState();
-
   ros::Rate    r(simulation_rate);
   const double dt = 1 / simulation_rate;
 
+  ros::Timer pub_Timer = n.createTimer(odom_pub_duration, pubcallback);
+
   Control control;
 
-  nav_msgs::Odometry odom_msg;
   odom_msg.header.frame_id = "/simulator";
   odom_msg.child_frame_id  = "/" + quad_name;
 
-  sensor_msgs::Imu imu;
   imu.header.frame_id = "/simulator";
+
+  simdebug_msg.header.frame_id = "/simulator";
 
   /*
   command.force[0] = 0;
@@ -264,7 +284,6 @@ main(int argc, char** argv)
   command.kOm[2] = 0.15;
   */
 
-  ros::Time next_odom_pub_time = ros::Time::now();
   while (n.ok())
   {
     ros::spinOnce();
@@ -283,19 +302,6 @@ main(int argc, char** argv)
     quad.setExternalMoment(disturbance.m);
     quad.step(dt);
 
-    ros::Time tnow = ros::Time::now();
-
-    if (tnow >= next_odom_pub_time)
-    {
-      next_odom_pub_time += odom_pub_duration;
-      odom_msg.header.stamp = tnow;
-      state                 = quad.getState();
-      stateToOdomMsg(state, odom_msg);
-      quadToImuMsg(quad, imu);
-      odom_pub.publish(odom_msg);
-      imu_pub.publish(imu);
-    }
-
     r.sleep();
   }
 
@@ -303,9 +309,10 @@ main(int argc, char** argv)
 }
 
 void
-stateToOdomMsg(const QuadrotorSimulator::Quadrotor::State& state,
-               nav_msgs::Odometry&                         odom)
+stateToOdomMsg(const QuadrotorSimulator::Quadrotor& quad,
+               nav_msgs::Odometry&                  odom)
 {
+  QuadrotorSimulator::Quadrotor::State state = quad.getState();
   odom.pose.pose.position.x = state.x(0);
   odom.pose.pose.position.y = state.x(1);
   odom.pose.pose.position.z = state.x(2);
@@ -323,6 +330,7 @@ stateToOdomMsg(const QuadrotorSimulator::Quadrotor::State& state,
   odom.twist.twist.angular.x = state.omega(0);
   odom.twist.twist.angular.y = state.omega(1);
   odom.twist.twist.angular.z = state.omega(2);
+  odom.header.stamp = ros::Time::now();
 }
 
 void
@@ -343,4 +351,34 @@ quadToImuMsg(const QuadrotorSimulator::Quadrotor& quad, sensor_msgs::Imu& imu)
   imu.linear_acceleration.x = quad.getAcc()[0];
   imu.linear_acceleration.y = quad.getAcc()[1];
   imu.linear_acceleration.z = quad.getAcc()[2];
+
+  imu.header.stamp = ros::Time::now();
+}
+
+void quadGetSimDebug(const QuadrotorSimulator::Quadrotor& quad,
+                  quadrotor_msgs::SimDebug&       simdebug_msg)
+{
+  QuadrotorSimulator::Quadrotor::State state = quad.getState();
+
+  double RPMmax = quad.getMaxRPM();
+  double RPMmin = quad.getMinRPM();
+  
+  simdebug_msg.pwm_1 = (state.motor_rpm(0) - RPMmin) / (RPMmax - RPMmin) * 1000 + 1000;
+  simdebug_msg.pwm_2 = (state.motor_rpm(1) - RPMmin) / (RPMmax - RPMmin) * 1000 + 1000;
+  simdebug_msg.pwm_3 = (state.motor_rpm(2) - RPMmin) / (RPMmax - RPMmin) * 1000 + 1000;
+  simdebug_msg.pwm_4 = (state.motor_rpm(3) - RPMmin) / (RPMmax - RPMmin) * 1000 + 1000;
+  
+  simdebug_msg.pos_x = state.x(0); 
+  simdebug_msg.pos_y = state.x(1); 
+  simdebug_msg.pos_z = state.x(2);
+
+  simdebug_msg.vel_x = state.v(0);
+  simdebug_msg.vel_y = state.v(1);
+  simdebug_msg.vel_z = state.v(2);
+
+  simdebug_msg.omega_x = state.omega(0);
+  simdebug_msg.omega_y = state.omega(1);
+  simdebug_msg.omega_z = state.omega(2);
+
+  simdebug_msg.header.stamp = ros::Time::now();
 }

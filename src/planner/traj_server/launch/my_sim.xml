@@ -67,7 +67,6 @@
     <param name="so3_control/init_state_z" value="$(arg init_z)"/>
     <remap from="~odom" to="/visual_slam/odom"/>
     <remap from="~position_cmd" to="/planning/pos_cmd"/>
-    <!-- <remap from="~position_cmd" to="/position_cmd"/> -->
     <remap from="~motors" to="motors"/>
     <remap from="~corrections" to="corrections"/>
     <remap from="~so3_cmd" to="so3_cmd"/>
@@ -81,13 +80,13 @@
     <param name="use_hopf" value="$(arg use_hopf_)"/>
   </node>
 
-  <!-- <node pkg="so3_disturbance_generator" name="so3_disturbance_generator" type="so3_disturbance_generator" output="screen">
-        <remap from="~odom" to="/visual_slam/odom"/>             
-        <remap from="~noisy_odom" to="/state_ukf/odom"/>          
-        <remap from="~correction" to="/visual_slam/correction"/>   
-        <remap from="~force_disturbance" to="force_disturbance"/>        
-        <remap from="~moment_disturbance" to="moment_disturbance"/>            
-  </node>  -->
+  <!-- <node pkg="poscmd_2_odom" name="poscmd_2_odom" type="poscmd_2_odom" output="screen">
+    <param name="init_x" value="$(arg init_x)"/>
+    <param name="init_y" value="$(arg init_y)"/>
+    <param name="init_z" value="$(arg init_z)"/>
+    <remap from="~command" to="/planning/pos_cmd"/>
+    <remap from="~odometry" to="/visual_slam/odom"/>
+  </node> -->
 
   <node pkg="odom_visualization" name="odom_visualization" type="odom_visualization" output="screen">
     <remap from="~odom" to="/visual_slam/odom"/>

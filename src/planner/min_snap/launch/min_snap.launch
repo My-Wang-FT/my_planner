@@ -10,14 +10,16 @@
   <arg name="init_y_" value="0.0"/>
   <arg name="init_z_" value="2.0"/>
 
-  <arg name="meanvel" value="4.0"/>
+  <arg name="meanvel" value="5.0"/>
   <arg name="use_hopf" value="true"/>
   <arg name="yaw_ctrl" value="false"/>
+  <arg name="radius_" value="1.5"/>
+  <arg name="acro_type" value="3"/>
 
   <!-- General topic -->
   <arg name="odom_topic" value="/visual_slam/odom" />
   <arg name="pos_cmd_topic" value="/planning/pos_cmd" />
-  
+
   <!-- use simulator -->
   <include file="$(find traj_server)/launch/my_sim.xml">
     <arg name="map_size_x_" value="$(arg map_size_x)"/>
@@ -47,7 +49,7 @@
     <remap from="/goal_list" to="/planning/goal_list" />
     <remap from="/position_cmd" to="$(arg pos_cmd_topic)" />
     <remap from="/traj_pts" to="/planning/traj_pts" />
-    <remap from="/odometry" to="$(arg odom_topic)" />   
+    <remap from="/odometry" to="$(arg odom_topic)" />
   </node>
 
   <node pkg="traj_server" name="my_traj_server" type="my_traj_server" output="screen">
@@ -55,7 +57,19 @@
     <remap from="/poly_coefs" to="/planning/poly_coefs" />
     <remap from="/traj_pts" to="/planning/traj_pts" />
     <param name="yaw_ctrl_" value="$(arg yaw_ctrl)"/>
-    <param name="mean_vel" value="$(arg meanvel)" /> 
+    <param name="mean_vel" value="$(arg meanvel)" />
+  </node>
+
+  <node pkg="test_pkg" name="test_goal" type="test_goal" output="screen">
+    <remap from="/test_goal_list" to="/test/goal_list" />
+    <remap from="/odom_topic" to="$(arg odom_topic)" />
+    <param name="type" value="$(arg acro_type)" />
+    <param name="radius" value="$(arg radius_)" />
+    <!-- <param name="dir_x" value="1.0" />
+    <param name="dir_y" value="1.0" />
+    <param name="center_x" value="5.0" />
+    <param name="center_y" value="0.0" />
+    <param name="center_z" value="9.0" /> -->
   </node>
 
 </launch>
